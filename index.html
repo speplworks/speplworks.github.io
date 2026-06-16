@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Speaking Pictures is a Mumbai-based creative technology studio — games, virtual production, 3D content, AI media, and post production. One studio. Every dimension of visual storytelling.">
+  <meta property="og:title" content="Speaking Pictures — We Build Worlds.">
+  <meta property="og:description" content="Mumbai-based creative technology studio. Games, virtual production, 3D content, AI media, post production.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://speaking.pictures">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Speaking Pictures — We Build Worlds.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── RESET ────────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── TOKENS ───────────────────────────────────────────────── */
+    :root {
+      --bg:       #0C0C0C;
+      --surface:  #141414;
+      --surface2: #1C1C1C;
+      --text:     #EDEBE6;
+      --muted:    #888580;
+      --dim:      #4A4845;
+      --accent:   #C8963C;
+      --border:   #282828;
+      --max:      1080px;
+    }
+
+    /* ─── BASE ─────────────────────────────────────────────────── */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    .display { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section { padding: 6rem 0; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── NAVIGATION ───────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+
+    nav.scrolled {
+      background: rgba(12, 12, 12, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+    .nav-link {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .nav-cta {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      border: 1px solid rgba(200, 150, 60, 0.5);
+      padding: 0.55rem 1.25rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    /* ─── BUTTONS ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: #d9a548; }
+    .btn-outline { border: 1px solid var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--muted); color: var(--text); }
+
+    /* ─── SECTION LABEL ────────────────────────────────────────── */
+    .eyebrow {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ─── REVEAL ANIMATIONS ────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .delay-1 { transition-delay: 0.08s; }
+    .delay-2 { transition-delay: 0.16s; }
+    .delay-3 { transition-delay: 0.24s; }
+    .delay-4 { transition-delay: 0.32s; }
+    .delay-5 { transition-delay: 0.40s; }
+
+    /* ─── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 9rem 2rem 7rem;
+      overflow: hidden;
+    }
+
+    /* Ambient moving grid */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: -80px;
+      background-image:
+        linear-gradient(rgba(40, 40, 40, 0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(40, 40, 40, 0.45) 1px, transparent 1px);
+      background-size: 72px 72px;
+      animation: grid-drift 26s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes grid-drift {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(72px, 72px); }
+    }
+
+    /* Signature element: two subtle amber letterbox bars framing the hero */
+    .hero-frame {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .hero-frame::before,
+    .hero-frame::after {
+      content: '';
+      position: absolute;
+      left: 2.5rem;
+      right: 2.5rem;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.22;
+    }
+    .hero-frame::before { top: 17%; }
+    .hero-frame::after  { bottom: 17%; }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 10vw, 7.5rem);
+      font-weight: 300;
+      line-height: 1.0;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 500px;
+      margin: 0 auto 3rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 1;
+    }
+    .hero-scroll span {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, transparent, var(--dim));
+      animation: line-drop 2s ease-in-out infinite;
+    }
+    @keyframes line-drop {
+      0%, 100% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+      50%       { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* ─── ABOUT ────────────────────────────────────────────────── */
+    #about { border-top: 1px solid var(--border); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 300;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-body {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.4rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ─── DISCIPLINES ──────────────────────────────────────────── */
+    #disciplines { border-top: 1px solid var(--border); }
+
+    .disciplines-head { margin-bottom: 3rem; }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .disciplines-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .disc-card {
+      background: var(--surface);
+      padding: 2rem 1.5rem;
+      transition: background 0.25s;
+    }
+    .disc-card:hover { background: var(--surface2); }
+
+    .disc-num {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .disc-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+
+    .disc-desc {
+      font-size: 12px;
+      color: var(--dim);
+      line-height: 1.65;
+    }
+
+    /* ─── SELECTED WORK ────────────────────────────────────────── */
+    #work { border-top: 1px solid var(--border); }
+
+    .work-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+    }
+
+    .work-note {
+      font-size: 12px;
+      color: var(--dim);
+      font-style: italic;
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .work-card {
+      background: var(--surface);
+      aspect-ratio: 4/3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .work-card:hover { background: var(--surface2); }
+
+    .work-ph {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--border);
+      text-transform: uppercase;
+    }
+
+    .work-cat {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .work-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ─── TECHNOLOGY ───────────────────────────────────────────── */
+    #technology { border-top: 1px solid var(--border); }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .tech-left .section-title { margin-bottom: 1.25rem; }
+    .tech-left p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .tech-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .tech-tag:hover {
+      border-color: rgba(200, 150, 60, 0.4);
+      color: var(--text);
+    }
+
+    /* ─── INDUSTRIES ───────────────────────────────────────────── */
+    #industries { border-top: 1px solid var(--border); }
+
+    .industries-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .industries-left .section-title { margin-bottom: 1.25rem; }
+    .industries-left p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .ind-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      padding-top: 0.25rem;
+    }
+
+    .ind-tag {
+      border: 1px solid var(--border);
+      padding: 0.65rem 1.25rem;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+      cursor: default;
+    }
+    .ind-tag:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* ─── INVESTORS ────────────────────────────────────────────── */
+    #investors { border-top: 1px solid var(--border); }
+
+    .investor-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .investor-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 1rem;
+    }
+
+    .investor-body {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 540px;
+    }
+
+    /* ─── CONTACT ──────────────────────────────────────────────── */
+    #contact {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 9rem 2rem;
+    }
+
+    .contact-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 2.5rem;
+    }
+    .contact-links a {
+      font-size: 17px;
+      color: var(--accent);
+      transition: color 0.2s;
+    }
+    .contact-links a:hover { color: #d9a548; }
+
+    .contact-location {
+      margin-top: 2rem;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ─── FOOTER ───────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p {
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      section { padding: 4.5rem 0; }
+
+      .about-grid,
+      .tech-grid,
+      .industries-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+
+      .disciplines-grid { grid-template-columns: repeat(2, 1fr); }
+      .disciplines-grid .disc-card:last-child { grid-column: span 2; }
+
+      .work-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .investor-card { grid-template-columns: 1fr; gap: 2rem; padding: 2.5rem; }
+
+      .work-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+      .hero-frame::before { top: 14%; }
+      .hero-frame::after  { bottom: 14%; }
+    }
+
+    @media (max-width: 560px) {
+      .disciplines-grid { grid-template-columns: 1fr; }
+      .disciplines-grid .disc-card:last-child { grid-column: 1; }
+
+      .work-grid { grid-template-columns: 1fr; }
+
+      .nav-links .nav-link { display: none; }
+
+      footer { flex-direction: column; gap: 0.4rem; text-align: center; }
+
+      #contact { padding: 6rem 2rem; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .hero::before { animation: none; }
+      .hero-scroll-line { animation: none; }
+      .reveal { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">Speaking Pictures</a>
+    <div class="nav-links">
+      <a href="#disciplines" class="nav-link">Work</a>
+      <a href="#investors" class="nav-link">Investors</a>
+      <a href="#contact" class="nav-cta">Get in Touch</a>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ──────────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-frame" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Speaking Pictures Entertainment Pvt. Ltd. — Mumbai</p>
+      <h1 class="hero-title display">
+        We build<br><em>worlds.</em>
+      </h1>
+      <p class="hero-sub">
+        Virtual production · Game development · 3D content<br>
+        AI media · Post production.<br>
+        One studio. Every dimension of visual storytelling.
+      </p>
+      <div class="hero-actions">
+        <a href="#work" class="btn btn-primary">View Our Work</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <div class="reveal">
+          <span class="eyebrow">The Studio</span>
+          <h2 class="about-title">A creative technology studio built for the next era of visual content.</h2>
+          <p class="about-body">Speaking Pictures is a Mumbai-based studio operating at the intersection of game development, real-time 3D, AI-generated content, virtual production, and post production — delivering work that was previously impossible to produce in India. We don't refer out. We do it all, in-house.</p>
+        </div>
+
+        <div class="about-stats reveal delay-2">
+          <div class="stat">
+            <span class="stat-val">6–15</span>
+            <span class="stat-label">Team Members</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">5</span>
+            <span class="stat-label">Core Disciplines</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">Mumbai</span>
+            <span class="stat-label">India</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FIVE DISCIPLINES ──────────────────────────────────── -->
+  <section id="disciplines">
+    <div class="container">
+      <div class="disciplines-head reveal">
+        <span class="eyebrow">What We Build</span>
+        <h2 class="section-title">Five disciplines. One studio.</h2>
+      </div>
+
+      <div class="disciplines-grid">
+        <div class="disc-card reveal delay-1">
+          <span class="disc-num">01</span>
+          <h3 class="disc-name">3D Content &amp; Characters</h3>
+          <p class="disc-desc">Marketplace-ready assets, characters, environments, and VFX — built in UE5, Houdini, and Blender.</p>
+        </div>
+        <div class="disc-card reveal delay-2">
+          <span class="disc-num">02</span>
+          <h3 class="disc-name">Games &amp; Simulations</h3>
+          <p class="disc-desc">Original titles on Steam, PS5, and Xbox. Industrial and defence simulation for client deployment.</p>
+        </div>
+        <div class="disc-card reveal delay-3">
+          <span class="disc-num">03</span>
+          <h3 class="disc-name">AI Content Studio</h3>
+          <p class="disc-desc">Music, video, and mixed media at the intersection of AI and live-action production.</p>
+        </div>
+        <div class="disc-card reveal delay-4">
+          <span class="disc-num">04</span>
+          <h3 class="disc-name">Virtual Production</h3>
+          <p class="disc-desc">Real-time UE5 environments on LED volume stages. The line between on-set and digital, removed.</p>
+        </div>
+        <div class="disc-card reveal delay-5">
+          <span class="disc-num">05</span>
+          <h3 class="disc-name">Post Production</h3>
+          <p class="disc-desc">Editing, colour grading, motion graphics, VFX integration, and broadcast-standard delivery.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SELECTED WORK ─────────────────────────────────────── -->
+  <section id="work">
+    <div class="container">
+      <div class="work-header reveal">
+        <div>
+          <span class="eyebrow">Selected Work</span>
+          <h2 class="section-title">Projects</h2>
+        </div>
+        <span class="work-note">Full showreel available on request</span>
+      </div>
+
+      <div class="work-grid">
+        <div class="work-card reveal delay-1">
+          <div class="work-ph">Image Placeholder</div>
+          <p class="work-cat">Game — Unreal Engine 5</p>
+          <p class="work-name">Zombie Strike</p>
+        </div>
+        <div class="work-card reveal delay-2">
+          <div class="work-ph">Image Placeholder</div>
+          <p class="work-cat">Simulation / Defence</p>
+          <p class="work-name">Drone Command Simulator</p>
+        </div>
+        <div class="work-card reveal delay-3">
+          <div class="work-ph">Image Placeholder</div>
+          <p class="work-cat">3D Content — UE Marketplace</p>
+          <p class="work-name">Environmental Asset Pack</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TECHNOLOGY ────────────────────────────────────────── -->
+  <section id="technology">
+    <div class="container">
+      <div class="tech-grid">
+
+        <div class="reveal">
+          <span class="eyebrow">Technology</span>
+          <h2 class="section-title" style="margin-bottom:1.25rem;">Powered by the world's most advanced real-time tools.</h2>
+          <p>We build with the same engines and AI platforms used by ILM, Framestore, and Epic Games — at India-competitive pricing.</p>
+        </div>
+
+        <div class="tech-tags reveal delay-2">
+          <span class="tech-tag">Unreal Engine 5</span>
+          <span class="tech-tag">Unity 3D</span>
+          <span class="tech-tag">Houdini</span>
+          <span class="tech-tag">Blender</span>
+          <span class="tech-tag">Midjourney</span>
+          <span class="tech-tag">Runway ML</span>
+          <span class="tech-tag">Suno AI</span>
+          <span class="tech-tag">Kling</span>
+          <span class="tech-tag">DaVinci Resolve</span>
+          <span class="tech-tag">LED Volume</span>
+          <span class="tech-tag">Motion Capture</span>
+          <span class="tech-tag">Real-time VFX</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── INDUSTRIES ────────────────────────────────────────── -->
+  <section id="industries">
+    <div class="container">
+      <div class="industries-grid">
+
+        <div class="reveal">
+          <span class="eyebrow">Industries</span>
+          <h2 class="section-title" style="margin-bottom:1.25rem;">Built for your industry.</h2>
+          <p>We serve entertainment studios, FMCG and consumer brands, automotive, aviation and aerospace, and government clients across India and internationally.</p>
+        </div>
+
+        <div class="ind-tags reveal delay-2">
+          <span class="ind-tag">Entertainment &amp; Media</span>
+          <span class="ind-tag">FMCG &amp; Consumer Brands</span>
+          <span class="ind-tag">Automobile</span>
+          <span class="ind-tag">Aviation &amp; Aerospace</span>
+          <span class="ind-tag">Government &amp; Defence</span>
+          <span class="ind-tag">OTT &amp; Broadcast</span>
+          <span class="ind-tag">Pharma &amp; Healthcare</span>
+          <span class="ind-tag">Real Estate</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOR INVESTORS ─────────────────────────────────────── -->
+  <section id="investors">
+    <div class="container">
+      <div class="investor-card reveal">
+        <div>
+          <span class="eyebrow">For Investors</span>
+          <h2 class="investor-title">Building India's first full-stack real-time creative studio.</h2>
+          <p class="investor-body">Speaking Pictures operates across four growing markets — game development, VFX &amp; virtual production, AI content, and education technology — from a single India-based studio. We are building IP, recurring revenue, and a global brand. If you are interested in learning more, we would be happy to share our investor overview.</p>
+        </div>
+        <div>
+          <a href="mailto:invest@speaking.pictures?subject=Investor%20Enquiry%20%E2%80%94%20Speaking%20Pictures" class="btn btn-primary" style="white-space:nowrap;">Request Investor Deck &nbsp;→</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ───────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container">
+      <h2 class="contact-title display reveal">Let's build<br>something<br>remarkable.</h2>
+      <div class="contact-links reveal delay-1">
+        <a href="https://speaking.pictures" target="_blank" rel="noopener">speaking.pictures</a>
+        <a href="mailto:hello@speaking.pictures">hello@speaking.pictures</a>
+      </div>
+      <a href="mailto:hello@speaking.pictures" class="btn btn-primary reveal delay-2">Start a Conversation &nbsp;→</a>
+      <p class="contact-location reveal delay-3">Mumbai, India</p>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────── -->
+  <footer>
+    <p>© [YEAR] Speaking Pictures Entertainment Pvt. Ltd.</p>
+    <p>Pictures that speak.™</p>
+  </footer>
+
+  <!-- ─── JS ───────────────────────────────────────────────── -->
+  <script>
+    // Nav scroll state
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Scroll-reveal with IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Hide scroll hint when user scrolls
+    const scrollHint = document.querySelector('.hero-scroll');
+    const hideHint = () => { if (window.scrollY > 80) { scrollHint.style.opacity = '0'; } };
+    window.addEventListener('scroll', hideHint, { passive: true, once: true });
+  </script>
+
+</body>
+</html>
