@@ -9,7 +9,13 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://speaking.pictures">
   <meta name="twitter:card" content="summary_large_image">
+  
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon_32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon_16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon_180.png">
+
   <title>Speaking Pictures — We Build Worlds.</title>
+
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,6 +88,12 @@
       letter-spacing: 0.3em;
       color: var(--text);
       text-transform: uppercase;
+    }
+
+    .nav-logo img {
+      height: 36px;
+      width: auto;
+      display: block;
     }
 
     .nav-links { display: flex; gap: 2rem; align-items: center; }
@@ -646,28 +658,31 @@
 <body>
 
   <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
-  <nav id="nav">
-    <a href="#" class="nav-logo">Speaking Pictures</a>
-    <div class="nav-links">
-      <a href="#disciplines" class="nav-link">Work</a>
-      <a href="#investors" class="nav-link">Investors</a>
-      <a href="#contact" class="nav-cta">Get in Touch</a>
-    </div>
-  </nav>
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="imgz/logo.png" alt="Speaking Pictures" height="36">
+  </a>
+  <div class="nav-links">
+    <a href="#disciplines" class="nav-link">Work</a>
+    <a href="#investors" class="nav-link">Investors</a>
+    <a href="#contact" class="nav-cta">Get in Touch</a>
+  </div>
+</nav>
 
   <!-- ─── HERO ──────────────────────────────────────────────── -->
-  <section class="hero" id="hero">
-    <div class="hero-frame" aria-hidden="true"></div>
+  <section class="hero" id="hero" >
+    <div class="hero-frame" aria-hidden="true"  style="background-image: url('imgz/HEADER_IMG.png'); background-size: cover; background-position: center;" ></div>
 
-    <div class="hero-inner">
-      <p class="hero-eyebrow">Speaking Pictures Entertainment Pvt. Ltd. — Mumbai</p>
+    <div class="hero-inner" >
+      <p class="hero-eyebrow">Speaking Pictures Entertainment Pvt. Ltd.</p>
       <h1 class="hero-title display">
         We build<br><em>worlds.</em>
       </h1>
       <p class="hero-sub">
-        Virtual production · Game development · 3D content<br>
-        AI media · Post production.<br>
-        One studio. Every dimension of visual storytelling.
+        Game development · 3D content · Virtual Production<br>
+        AI Content & Tech Creation · Post Production Automation.<br>
+        One studio. Alternate Dimensions of Visual Storytelling.<br>
+        With AI Assisted Workflows, we are able to deliver work that was previously impossible to produce, and in the timelines.
       </p>
       <div class="hero-actions">
         <a href="#work" class="btn btn-primary">View Our Work</a>
@@ -689,7 +704,7 @@
         <div class="reveal">
           <span class="eyebrow">The Studio</span>
           <h2 class="about-title">A creative technology studio built for the next era of visual content.</h2>
-          <p class="about-body">Speaking Pictures is a Mumbai-based studio operating at the intersection of game development, real-time 3D, AI-generated content, virtual production, and post production — delivering work that was previously impossible to produce in India. We don't refer out. We do it all, in-house.</p>
+          <p class="about-body">Speaking Pictures is a Mumbai-based studio operating at the intersection of game development, real-time 3D, AI-generated content, virtual production, and post production — delivering work that was previously impossible to produce earlier. We don't refer out. We do it all, in-house.</p>
         </div>
 
         <div class="about-stats reveal delay-2">
@@ -757,24 +772,24 @@
           <span class="eyebrow">Selected Work</span>
           <h2 class="section-title">Projects</h2>
         </div>
-        <span class="work-note">Full showreel available on request</span>
+        <span class="work-note">Full showreel coming soon !</span>
       </div>
 
       <div class="work-grid">
-        <div class="work-card reveal delay-1">
-          <div class="work-ph">Image Placeholder</div>
-          <p class="work-cat">Game — Unreal Engine 5</p>
-          <p class="work-name">Zombie Strike</p>
+        <div class="work-card reveal delay-1" style="background-image: url('imgz/Zombie_TopDown_Game_Preview.png'); background-size: cover; background-position: center;" >
+          <div class="work-ph"></div>
+          <p class="work-cat">GAMES</p>
+          <p class="work-name">Zombie Top Down Shooter (Coming Soon)</p>
         </div>
-        <div class="work-card reveal delay-2">
-          <div class="work-ph">Image Placeholder</div>
-          <p class="work-cat">Simulation / Defence</p>
-          <p class="work-name">Drone Command Simulator</p>
+        <div class="work-card reveal delay-3" style="background-image: url('imgz/fab-listing.jpg'); background-size: cover; background-position: center;">
+          <div class="work-ph"></div>
+          <p class="work-cat">3D CONTENT</p>
+          <p class="work-name">Characters, Plugins & Animations</p>
         </div>
-        <div class="work-card reveal delay-3">
-          <div class="work-ph">Image Placeholder</div>
-          <p class="work-cat">3D Content — UE Marketplace</p>
-          <p class="work-name">Environmental Asset Pack</p>
+        <div class="work-card reveal delay-2" style="background-image: url('imgz/droneSym.png'); background-size: cover; background-position: center;">
+          <div class="work-ph"></div>
+          <p class="work-cat">Drone Simulation</p>
+          <p class="work-name">DroneSym</p>
         </div>
       </div>
     </div>
@@ -788,7 +803,7 @@
         <div class="reveal">
           <span class="eyebrow">Technology</span>
           <h2 class="section-title" style="margin-bottom:1.25rem;">Powered by the world's most advanced real-time tools.</h2>
-          <p>We build with the same engines and AI platforms used by ILM, Framestore, and Epic Games — at India-competitive pricing.</p>
+          <p>We build with the same engines and AI platforms used by some of the best studios of the world — at India's Competitive Pricing.</p>
         </div>
 
         <div class="tech-tags reveal delay-2">
@@ -796,14 +811,8 @@
           <span class="tech-tag">Unity 3D</span>
           <span class="tech-tag">Houdini</span>
           <span class="tech-tag">Blender</span>
-          <span class="tech-tag">Midjourney</span>
-          <span class="tech-tag">Runway ML</span>
-          <span class="tech-tag">Suno AI</span>
-          <span class="tech-tag">Kling</span>
           <span class="tech-tag">DaVinci Resolve</span>
-          <span class="tech-tag">LED Volume</span>
           <span class="tech-tag">Motion Capture</span>
-          <span class="tech-tag">Real-time VFX</span>
         </div>
 
       </div>
@@ -818,16 +827,14 @@
         <div class="reveal">
           <span class="eyebrow">Industries</span>
           <h2 class="section-title" style="margin-bottom:1.25rem;">Built for your industry.</h2>
-          <p>We serve entertainment studios, FMCG and consumer brands, automotive, aviation and aerospace, and government clients across India and internationally.</p>
+          <p>Talk to us for your new-age marketing stratgies, we have worked across domains  with innovative, creative and proplem solving solutions with latest technologies.</p>
         </div>
 
         <div class="ind-tags reveal delay-2">
           <span class="ind-tag">Entertainment &amp; Media</span>
-          <span class="ind-tag">FMCG &amp; Consumer Brands</span>
-          <span class="ind-tag">Automobile</span>
-          <span class="ind-tag">Aviation &amp; Aerospace</span>
+          <span class="ind-tag">FMCG, &amp; Consumer Brands</span>
+          <span class="ind-tag">Automobile, Aviation &amp; Aerospace</span>
           <span class="ind-tag">Government &amp; Defence</span>
-          <span class="ind-tag">OTT &amp; Broadcast</span>
           <span class="ind-tag">Pharma &amp; Healthcare</span>
           <span class="ind-tag">Real Estate</span>
         </div>
@@ -842,8 +849,10 @@
       <div class="investor-card reveal">
         <div>
           <span class="eyebrow">For Investors</span>
-          <h2 class="investor-title">Building India's first full-stack real-time creative studio.</h2>
-          <p class="investor-body">Speaking Pictures operates across four growing markets — game development, VFX &amp; virtual production, AI content, and education technology — from a single India-based studio. We are building IP, recurring revenue, and a global brand. If you are interested in learning more, we would be happy to share our investor overview.</p>
+          <h2 class="investor-title">Building a first full-stack real-time creative studio.</h2>
+          <p class="investor-body">We at, Speaking Pictures Entertainment Pvt. Ltd., currently focusing on Gaming Technologies, 3D Pipelines (VFX, Character, Clothing, Animations etc.), Technical Solutions (Plugins), Virtual Production, &amp; AI Content Creations upgrading Traditional Production Workflows. 
+            We plan to build solutions leveraging newer technologies, with an end goal to - build faster creative workflows for entertainment industry, technical solutions for creative workforce, and simultaneoulsy enable ourselves with international quality creative content. 
+          </p>
         </div>
         <div>
           <a href="mailto:invest@speaking.pictures?subject=Investor%20Enquiry%20%E2%80%94%20Speaking%20Pictures" class="btn btn-primary" style="white-space:nowrap;">Request Investor Deck &nbsp;→</a>
@@ -856,19 +865,15 @@
   <section id="contact">
     <div class="container">
       <h2 class="contact-title display reveal">Let's build<br>something<br>remarkable.</h2>
-      <div class="contact-links reveal delay-1">
-        <a href="https://speaking.pictures" target="_blank" rel="noopener">speaking.pictures</a>
-        <a href="mailto:hello@speaking.pictures">hello@speaking.pictures</a>
-      </div>
       <a href="mailto:hello@speaking.pictures" class="btn btn-primary reveal delay-2">Start a Conversation &nbsp;→</a>
-      <p class="contact-location reveal delay-3">Mumbai, India</p>
+      <p class="contact-location reveal delay-3">+91 95820 74400</p>
     </div>
   </section>
 
   <!-- ─── FOOTER ────────────────────────────────────────────── -->
   <footer>
-    <p>© [YEAR] Speaking Pictures Entertainment Pvt. Ltd.</p>
-    <p>Pictures that speak.™</p>
+    <p>© 2026 Speaking Pictures Entertainment Pvt. Ltd.</p>
+    <p>Pictures That Speak.</p>
   </footer>
 
   <!-- ─── JS ───────────────────────────────────────────────── -->
