@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Speaking Pictures — games in development. Original titles across action, survival horror, RPG, and open-world genres. Built in Unreal Engine 5.">
+  <title>Games — Speaking Pictures</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── RESET ────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── TOKENS ───────────────────────────────────────────── */
+    :root {
+      --bg:        #0C0C0C;
+      --surface:   #141414;
+      --surface2:  #1C1C1C;
+      --text:      #EDEBE6;
+      --muted:     #888580;
+      --dim:       #4A4845;
+      --accent:    #C8963C;
+      --border:    #282828;
+      --green:     #3A7A4A;
+      --max:       1080px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+    /* ─── NAV ──────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(12,12,12,0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-back::before { content: '←'; font-size: 13px; }
+    .nav-back:hover { color: var(--text); }
+
+    .nav-right { display: flex; gap: 1.75rem; align-items: center; }
+    .nav-link {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      border: 1px solid rgba(200,150,60,0.5);
+      padding: 0.5rem 1.2rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: var(--bg); }
+
+    /* ─── PAGE HEADER ──────────────────────────────────────── */
+    .page-header {
+      padding: 9rem 0 5rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: 'GAMES';
+      position: absolute;
+      right: -1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22vw;
+      font-weight: 300;
+      color: var(--text);
+      opacity: 0.025;
+      line-height: 1;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .page-header .eyebrow {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .page-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+    .page-header p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.8;
+    }
+
+    /* ─── GAME QUICK NAV ───────────────────────────────────── */
+    .game-nav {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .game-nav::-webkit-scrollbar { display: none; }
+    .game-nav-inner {
+      display: flex;
+      padding: 0 2rem;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .game-nav-link {
+      display: block;
+      padding: 1rem 1.5rem 1rem 0;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: color 0.2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .game-nav-link:hover { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* ─── GAME ENTRY ───────────────────────────────────────── */
+    /*
+      HOW TO ADD A NEW GAME:
+      Copy everything between the two ═══ comments below
+      and paste it before the closing ═══ comment.
+      Update: id, game title, status badge, description, platforms.
+    */
+    .game-entry {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 5rem;
+    }
+
+    /* Artwork / key art block */
+    .game-artwork {
+      position: relative;
+      height: 420px;
+      background: var(--surface2);
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 3rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Overlay gradient so text stays readable over real images */
+    .game-artwork::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(12,12,12,0.2) 0%,
+        rgba(12,12,12,0.0) 40%,
+        rgba(12,12,12,0.7) 100%);
+      pointer-events: none;
+    }
+
+    /* The watermark title — signature element.
+       Gives each placeholder section identity before real art arrives.
+       Remove .game-watermark once you add a real background image. */
+    .game-watermark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 12vw, 11rem);
+      font-weight: 300;
+      color: var(--text);
+      opacity: 0.05;
+      letter-spacing: 0.05em;
+      text-align: center;
+      line-height: 1;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      padding: 0 1rem;
+      user-select: none;
+    }
+    .game-artwork:hover .game-watermark { opacity: 0.09; }
+
+    .art-placeholder-hint {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--border);
+      text-transform: uppercase;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    /* Status badge — top left of artwork */
+    .game-status {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      z-index: 2;
+    }
+    .status-dev    { background: rgba(200,150,60,0.15); color: var(--accent); border: 1px solid rgba(200,150,60,0.35); }
+    .status-prepro { background: rgba(136,133,128,0.12); color: var(--muted); border: 1px solid rgba(136,133,128,0.25); }
+    .status-concept{ background: rgba(74,72,69,0.15); color: var(--dim); border: 1px solid var(--border); }
+
+    /* Engine badge — top right */
+    .game-engine-badge {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: var(--dim);
+      text-transform: uppercase;
+      z-index: 2;
+      background: rgba(12,12,12,0.6);
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Game body layout */
+    .game-body {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* Left: title + meta chips + description */
+    .game-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .meta-chip {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.75rem;
+    }
+    .chip-mode { color: var(--accent); border-color: rgba(200,150,60,0.3); }
+
+    .game-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+
+    .game-desc p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.85;
+      margin-bottom: 1rem;
+    }
+    .game-desc p:last-child { margin-bottom: 0; }
+
+    /* Right: platforms + notify */
+    .game-sidebar {
+      padding-top: 0.25rem;
+    }
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.85rem;
+      display: block;
+    }
+
+    .platform-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Platform button states */
+    .plat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1rem;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    /* Live platform — clickable */
+    .plat-btn.live {
+      color: var(--text);
+      border-color: rgba(200,150,60,0.4);
+    }
+    .plat-btn.live:hover { border-color: var(--accent); background: rgba(200,150,60,0.06); }
+    .plat-btn.live .plat-status { color: var(--accent); font-size: 10px; letter-spacing: 0.1em; }
+
+    /* Demo available */
+    .plat-btn.demo {
+      color: var(--text);
+      border-color: rgba(58,122,74,0.4);
+    }
+    .plat-btn.demo:hover { border-color: var(--green); background: rgba(58,122,74,0.06); }
+    .plat-btn.demo .plat-status { color: #4A9C5A; font-size: 10px; }
+
+    /* Coming soon — greyed */
+    .plat-btn.soon {
+      color: var(--dim);
+      border-color: var(--border);
+      cursor: default;
+    }
+    .plat-btn.soon .plat-status { color: var(--dim); font-size: 10px; letter-spacing: 0.08em; }
+
+    /* Notify CTA */
+    .notify-btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-align: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .notify-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── REVEAL ───────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.08s; } .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; } .d4 { transition-delay: 0.32s; }
+
+    /* ─── STUDIO CTA ───────────────────────────────────────── */
+    .studio-cta {
+      padding: 6rem 0;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .studio-cta h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .studio-cta p { font-size: 15px; color: var(--muted); margin-bottom: 2rem; }
+    .btn {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: #d9a548; }
+    .btn-outline { border: 1px solid var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--muted); color: var(--text); }
+
+    /* ─── FOOTER ───────────────────────────────────────────── */
+    footer {
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p { font-size: 11px; color: var(--dim); letter-spacing: 0.1em; }
+
+    /* ─── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 820px) {
+      .game-artwork { height: 300px; }
+      .game-body { grid-template-columns: 1fr; gap: 2.5rem; }
+      .game-sidebar { padding-top: 0; border-top: 1px solid var(--border); padding-top: 2rem; }
+    }
+    @media (max-width: 560px) {
+      .game-artwork { height: 240px; }
+      .nav-right .nav-link { display: none; }
+      footer { flex-direction: column; gap: 0.4rem; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ──────────────────────────────────────────────── -->
+  <nav id="nav">
+    <a href="index.html" class="nav-back">Speaking Pictures</a>
+    <div class="nav-right">
+      <a href="index.html#disciplines" class="nav-link">Studio</a>
+      <a href="index.html#investors" class="nav-link">Investors</a>
+      <a href="index.html#contact" class="nav-cta">Get in Touch</a>
+    </div>
+  </nav>
+
+  <!-- ─── PAGE HEADER ──────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="container">
+      <span class="eyebrow">Game Development</span>
+      <h1>Worlds<br>We're Building</h1>
+      <p>Original titles in development across multiple genres — built in Unreal Engine 5 and Unity 3D. Each game is designed as a long-term IP, not a one-off release.</p>
+    </div>
+  </header>
+
+  <!-- ─── GAME QUICK NAV ────────────────────────────────────── -->
+  <nav class="game-nav" aria-label="Games">
+    <div class="game-nav-inner">
+      <a href="#dead-sector"    class="game-nav-link">Dead Sector</a>
+      <a href="#echo-protocol"  class="game-nav-link">Echo Protocol</a>
+      <a href="#hollow-dark"    class="game-nav-link">Hollow Dark</a>
+      <a href="#iron-covenant"  class="game-nav-link">Iron Covenant</a>
+      <a href="#fracture-earth" class="game-nav-link">Fracture Earth</a>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       GAME ENTRIES — copy one block to add a new game
+       ═══════════════════════════════════════════════════════ -->
+
+
+  <!-- ─── GAME 1: DEAD SECTOR ──────────────────────────────── -->
+  <!-- TO ADD KEY ART: add style="background-image: url('imgz/dead-sector.jpg');" to .game-artwork div -->
+  <article class="game-entry" id="dead-sector" style="padding-top: 5rem;">
+
+    <div class="game-artwork reveal">
+      <span class="game-status status-dev">In Development</span>
+      <span class="game-engine-badge">Unreal Engine 5</span>
+      <div class="game-watermark">DEAD SECTOR</div>
+      <p class="art-placeholder-hint">[ Key art / screenshot ]</p>
+    </div>
+
+    <div class="container">
+      <div class="game-body">
+
+        <div class="game-left reveal d1">
+          <div class="game-meta-row">
+            <span class="meta-chip">Top-Down Shooter</span>
+            <span class="meta-chip chip-mode">Multiplayer · 2–4 Players</span>
+            <span class="meta-chip">PC · Console</span>
+          </div>
+          <h2 class="game-title">Dead Sector</h2>
+          <div class="game-desc">
+            <p>A squad-based survival shooter set in the ruins of a quarantined megacity. Up to four players fight through procedurally influenced city districts — managing ammunition, coordinating flanks, and racing to extract before the encirclement closes. Fast, brutal, and built for replayability: the city never opens the same way twice.</p>
+            <p>Gameplay centres on positional tension. Every street corner is a decision point: push for the supply cache or hold the perimeter. A persistent upgrade loop between sessions means squads grow more capable — but so does the horde. Dead Sector rewards teams that communicate and punishes those that don't.</p>
+          </div>
+        </div>
+
+        <div class="game-sidebar reveal d2">
+          <span class="sidebar-label">Platforms</span>
+          <div class="platform-list">
+            <div class="plat-btn soon">
+              <span>Steam</span>
+              <span class="plat-status">Wishlist Soon</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>itch.io</span>
+              <span class="plat-status">Demo Coming</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>Xbox Series X</span>
+              <span class="plat-status">Planned</span>
+            </div>
+          </div>
+          <button class="notify-btn" onclick="notifyMe('Dead Sector')">Notify Me at Launch</button>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+
+  <!-- ─── GAME 2: ECHO PROTOCOL ─────────────────────────────── -->
+  <article class="game-entry" id="echo-protocol" style="padding-top: 5rem;">
+
+    <div class="game-artwork reveal">
+      <span class="game-status status-dev">In Development</span>
+      <span class="game-engine-badge">Unreal Engine 5</span>
+      <div class="game-watermark">ECHO PROTOCOL</div>
+      <p class="art-placeholder-hint">[ Key art / screenshot ]</p>
+    </div>
+
+    <div class="container">
+      <div class="game-body">
+
+        <div class="game-left reveal d1">
+          <div class="game-meta-row">
+            <span class="meta-chip">Third-Person Action Adventure</span>
+            <span class="meta-chip chip-mode">Single Player</span>
+            <span class="meta-chip">PC · PS5 · Xbox</span>
+          </div>
+          <h2 class="game-title">Echo Protocol</h2>
+          <div class="game-desc">
+            <p>A former intelligence operative turned independent archaeologist follows a trail of encrypted signal caches hidden across ancient ruins and modern conflict zones — each one pointing to something that was buried deliberately. Echo Protocol is a cinematic single-player action adventure: part parkour, part cover shooter, entirely character-driven.</p>
+            <p>The world is built to reward curiosity. Impossible locations — a cathedral half-submerged in a Himalayan glacier, a Cold War relay station embedded in a Maya ruin — are designed to be explored as much as cleared. The narrative branches at key moments, but the world always feels consequential. Inspired by the tension and scale of Uncharted, with a grittier tone and a less forgiving combat system.</p>
+          </div>
+        </div>
+
+        <div class="game-sidebar reveal d2">
+          <span class="sidebar-label">Platforms</span>
+          <div class="platform-list">
+            <div class="plat-btn soon">
+              <span>Steam</span>
+              <span class="plat-status">Wishlist Soon</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>PlayStation 5</span>
+              <span class="plat-status">Planned</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>Xbox Series X</span>
+              <span class="plat-status">Planned</span>
+            </div>
+          </div>
+          <button class="notify-btn" onclick="notifyMe('Echo Protocol')">Notify Me at Launch</button>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+
+  <!-- ─── GAME 3: HOLLOW DARK ───────────────────────────────── -->
+  <article class="game-entry" id="hollow-dark" style="padding-top: 5rem;">
+
+    <div class="game-artwork reveal">
+      <span class="game-status status-prepro">Pre-Production</span>
+      <span class="game-engine-badge">Unreal Engine 5</span>
+      <div class="game-watermark">HOLLOW DARK</div>
+      <p class="art-placeholder-hint">[ Key art / screenshot ]</p>
+    </div>
+
+    <div class="container">
+      <div class="game-body">
+
+        <div class="game-left reveal d1">
+          <div class="game-meta-row">
+            <span class="meta-chip">Survival Horror</span>
+            <span class="meta-chip chip-mode">Single Player</span>
+            <span class="meta-chip">PC · PS5</span>
+          </div>
+          <h2 class="game-title">Hollow Dark</h2>
+          <div class="game-desc">
+            <p>A pharmaceutical research station has gone silent. You are the only survivor of the initial containment breach — but the building's emergency lockdown protocol has sealed every exit, and something in the ventilation system has started moving with purpose. Hollow Dark is a claustrophobic survival horror built around resource discipline, environmental dread, and enemies that adapt to how you engage them.</p>
+            <p>Save points are scarce. Ammunition is scarcer. The facility's floor plan is yours to map — or ignore, at your own cost. A second playthrough reveals details that reframe everything the first one showed you. Inspired by the tension of Resident Evil and the atmosphere of Alien: Isolation.</p>
+          </div>
+        </div>
+
+        <div class="game-sidebar reveal d2">
+          <span class="sidebar-label">Platforms</span>
+          <div class="platform-list">
+            <div class="plat-btn soon">
+              <span>Steam</span>
+              <span class="plat-status">Wishlist Soon</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>itch.io</span>
+              <span class="plat-status">Demo Coming</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>PlayStation 5</span>
+              <span class="plat-status">Planned</span>
+            </div>
+          </div>
+          <button class="notify-btn" onclick="notifyMe('Hollow Dark')">Notify Me at Launch</button>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+
+  <!-- ─── GAME 4: IRON COVENANT ─────────────────────────────── -->
+  <article class="game-entry" id="iron-covenant" style="padding-top: 5rem;">
+
+    <div class="game-artwork reveal">
+      <span class="game-status status-prepro">Pre-Production</span>
+      <span class="game-engine-badge">Unreal Engine 5</span>
+      <div class="game-watermark">IRON COVENANT</div>
+      <p class="art-placeholder-hint">[ Key art / screenshot ]</p>
+    </div>
+
+    <div class="container">
+      <div class="game-body">
+
+        <div class="game-left reveal d1">
+          <div class="game-meta-row">
+            <span class="meta-chip">Action RPG</span>
+            <span class="meta-chip chip-mode">Multiplayer · Up to 6 Players</span>
+            <span class="meta-chip">PC · Console</span>
+          </div>
+          <h2 class="game-title">Iron Covenant</h2>
+          <div class="game-desc">
+            <p>An ancient pact between five kingdoms has fractured. Players choose from distinct warrior archetypes — each with deep skill trees and cosmetic progression — to battle across contested territories, raid fortified strongholds, and compete in seasonal faction wars. Iron Covenant is a multiplayer action RPG where the political map of the world shifts with every server session.</p>
+            <p>Power comes from mastery, not grinding. Each archetype builds laterally — new abilities, tactical options, and playstyle variations unlocked through skill rather than time investment. Seasonal narrative arcs keep the world moving whether you are playing or not. Designed for long-term communities, not disposable progression loops.</p>
+          </div>
+        </div>
+
+        <div class="game-sidebar reveal d2">
+          <span class="sidebar-label">Platforms</span>
+          <div class="platform-list">
+            <div class="plat-btn soon">
+              <span>Steam</span>
+              <span class="plat-status">Wishlist Soon</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>Epic Games Store</span>
+              <span class="plat-status">Planned</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>Xbox Series X</span>
+              <span class="plat-status">Planned</span>
+            </div>
+          </div>
+          <button class="notify-btn" onclick="notifyMe('Iron Covenant')">Notify Me at Launch</button>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+
+  <!-- ─── GAME 5: FRACTURE EARTH ────────────────────────────── -->
+  <article class="game-entry" id="fracture-earth" style="padding-top: 5rem;">
+
+    <div class="game-artwork reveal">
+      <span class="game-status status-concept">Concept Phase</span>
+      <span class="game-engine-badge">Unreal Engine 5</span>
+      <div class="game-watermark">FRACTURE EARTH</div>
+      <p class="art-placeholder-hint">[ Key art / concept art ]</p>
+    </div>
+
+    <div class="container">
+      <div class="game-body">
+
+        <div class="game-left reveal d1">
+          <div class="game-meta-row">
+            <span class="meta-chip">Open-World Survival</span>
+            <span class="meta-chip chip-mode">Multiplayer · PvPvE</span>
+            <span class="meta-chip">PC · Console</span>
+          </div>
+          <h2 class="game-title">Fracture Earth</h2>
+          <div class="game-desc">
+            <p>A catastrophic seismic cascade has split the continent. Survivors form clans, claim territories, and fight over dwindling resources on a world that is still actively reshaping itself — new fissures opening, trade routes collapsing, resource deposits shifting with every major geological event. Fracture Earth is a PvPvE open-world survival game where the environment is as dangerous as the players in it.</p>
+            <p>Base-building, long-range exploration, and emergent conflict sit alongside a dynamic weather and geology system that periodically forces the entire server into motion. No map stays the same for long. Clans that build in the wrong location pay for it. The game is designed around the idea that the most dangerous thing in the world is stability — it never lasts.</p>
+          </div>
+        </div>
+
+        <div class="game-sidebar reveal d2">
+          <span class="sidebar-label">Platforms</span>
+          <div class="platform-list">
+            <div class="plat-btn soon">
+              <span>Steam</span>
+              <span class="plat-status">Wishlist Soon</span>
+            </div>
+            <div class="plat-btn soon">
+              <span>Xbox Series X</span>
+              <span class="plat-status">Planned</span>
+            </div>
+          </div>
+          <button class="notify-btn" onclick="notifyMe('Fracture Earth')">Notify Me at Launch</button>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       END OF GAME ENTRIES — paste new game block above here
+       ═══════════════════════════════════════════════════════ -->
+
+
+  <!-- ─── STUDIO CTA ────────────────────────────────────────── -->
+  <section class="studio-cta">
+    <div class="container">
+      <h2 class="reveal">Working on a game?<br>Let's build it together.</h2>
+      <p class="reveal d1">We co-develop, co-publish, and provide full-service game production — from concept to Steam certification.</p>
+      <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+        <a href="index.html#contact" class="btn btn-primary reveal d2">Get in Touch</a>
+        <a href="index.html" class="btn btn-outline reveal d3">Back to Studio</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────── -->
+  <footer>
+    <p>© [YEAR] Speaking Pictures Entertainment Pvt. Ltd.</p>
+    <p>Pictures that speak.™</p>
+  </footer>
+
+
+  <!-- ─── JS ───────────────────────────────────────────────── -->
+  <script>
+    // Nav scroll state
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Notify Me — opens mailto with game name pre-filled
+    // Replace with a proper form or Mailchimp integration later
+    function notifyMe(gameName) {
+      const subject = encodeURIComponent('Notify me — ' + gameName);
+      const body = encodeURIComponent('Hi, please add me to the notification list for ' + gameName + ' by Speaking Pictures.');
+      window.location.href = 'mailto:hello@speaking.pictures?subject=' + subject + '&body=' + body;
+    }
+  </script>
+
+</body>
+</html>

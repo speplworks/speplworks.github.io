@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dead Sector — a top-down low-poly zombie shooter for 1–4 players. Built in Unreal Engine 5. Wishlist on Steam.">
+  <title>Dead Sector — Speaking Pictures</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── TOKENS ────────────────────────────────────────────── */
+    :root {
+      --bg:       #09090A;
+      --surface:  #131315;
+      --surface2: #1B1B1E;
+      --text:     #EDEBE6;
+      --muted:    #888582;
+      --dim:      #484644;
+      --accent:   #C8963C;   /* amber — fire, explosion */
+      --hot:      #C03228;   /* crimson — danger, zombie */
+      --border:   #262624;
+      --max:      1080px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+    /* ─── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.4rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(9,9,10,0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-left { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-game-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .nav-back {
+      font-size: 10px; font-weight: 400; letter-spacing: 0.12em;
+      color: var(--dim); text-transform: uppercase;
+      border-left: 1px solid var(--border); padding-left: 1.5rem;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--muted); }
+    .nav-right { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-link {
+      font-size: 11px; letter-spacing: 0.1em;
+      color: var(--muted); text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-wishlist {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 0.5rem 1.2rem;
+      background: var(--accent); color: var(--bg);
+      transition: background 0.2s;
+    }
+    .nav-wishlist:hover { background: #d9a548; }
+
+    /* ─── BUTTONS ───────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 0.9rem 2rem;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: #d9a548; }
+    .btn-secondary {
+      border: 1px solid rgba(136,133,130,0.4); color: var(--muted);
+    }
+    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+    .btn-hot { background: var(--hot); color: var(--text); }
+    .btn-hot:hover { background: #d43830; }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 9rem 2rem 8rem;
+      overflow: hidden;
+    }
+
+
+        /* Hero bg image placeholder */
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(12,12,12,0.55) 0%, rgba(12,12,12,0.75) 100%);
+      /* ↓ REPLACE with your hero image */
+      /* background-image: url('imgz/dronesim_hero.jpg'); */
+      background-size: cover; background-position: center;
+      pointer-events: none;
+        /* 3. Set your desired background image opacity here (0.0 to 1.0) */
+      opacity: 0.4; 
+  
+      /* 4. Push the image behind the text content layer */
+      z-index: 0; 
+    }
+
+
+    /* Low-poly triangular grid background — the signature element.
+       References the game's visual aesthetic directly. */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 104'%3E%3Cpolygon points='60,0 120,104 0,104' fill='%23131316' stroke='%231a1a1d' stroke-width='1.5'/%3E%3Cpolygon points='0,0 120,0 0,104' fill='%230f0f12' stroke='%231a1a1d' stroke-width='1.5'/%3E%3Cpolygon points='120,0 120,104 0,104' fill='%23161619' stroke='%231a1a1d' stroke-width='1.5'/%3E%3C/svg%3E"); 
+      background-size: 120px 104px;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+
+    /* Radial vignette to focus the center */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 50%,
+        transparent 20%, rgba(9,9,10,0.7) 100%);
+      pointer-events: none;
+    }
+
+    /* Destroyed city skyline silhouette — low-poly style, transitions hero to body */
+    .hero-terrain {
+      position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 90px; background: var(--bg); pointer-events: none;
+      clip-path: polygon(
+        0% 100%, 0% 72%, 2% 72%, 2% 48%, 4% 48%, 4% 62%,
+        6% 62%, 6% 38%, 9% 38%, 9% 55%, 11% 55%, 11% 42%,
+        14% 42%, 14% 60%, 17% 60%, 17% 38%, 20% 38%, 20% 52%,
+        23% 52%, 23% 28%, 26% 28%, 26% 48%, 29% 48%, 29% 36%,
+        32% 36%, 32% 55%, 35% 55%, 35% 42%, 38% 42%,
+        38% 100%, 41% 100%, 41% 58%, 44% 58%, 44% 38%,
+        47% 38%, 47% 52%, 50% 52%, 50% 32%, 53% 32%, 53% 52%,
+        56% 52%, 56% 42%, 59% 42%, 59% 60%, 62% 60%, 62% 38%,
+        65% 38%, 65% 55%, 68% 55%, 68% 44%, 71% 44%, 71% 62%,
+        74% 62%, 74% 45%, 77% 45%, 77% 35%, 80% 35%, 80% 52%,
+        83% 52%, 83% 42%, 86% 42%, 86% 58%, 89% 58%,
+        89% 40%, 92% 40%, 92% 55%, 95% 55%, 95% 70%,
+        97% 70%, 97% 52%, 100% 52%, 100% 100%
+      );
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 780px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--accent);
+      border: 1px solid rgba(200,150,60,0.3);
+      padding: 0.4rem 1rem; margin-bottom: 2rem;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4.5rem, 13vw, 9rem);
+      font-weight: 600;
+      line-height: 0.95;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-sub {
+      font-size: 12px; font-weight: 400;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 2.5rem;
+    }
+    .hero-sub span { color: var(--accent); }
+
+    .hero-actions {
+      display: flex; gap: 0.75rem;
+      justify-content: center; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-platforms {
+      display: flex; gap: 1.5rem; justify-content: center;
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    /* ─── ABOUT ─────────────────────────────────────────────── */
+    #about { padding: 6rem 0; border-bottom: 1px solid var(--border); }
+
+    .about-grid {
+      display: grid; grid-template-columns: 1.3fr 1fr;
+      gap: 4rem; align-items: start;
+    }
+
+    /* Screenshot / key art placeholder */
+    .game-screenshot-ph {
+      aspect-ratio: 16/9;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--border); position: relative; overflow: hidden;
+    }
+    /* Subtle low-poly triangular overlay on placeholder */
+    .game-screenshot-ph::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 104'%3E%3Cpolygon points='60,0 120,104 0,104' fill='%2318181b' stroke='%231f1f22' stroke-width='1'/%3E%3Cpolygon points='0,0 120,0 0,104' fill='%23141417' stroke='%231f1f22' stroke-width='1'/%3E%3Cpolygon points='120,0 120,104 0,104' fill='%23161619' stroke='%231f1f22' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 80px 70px; opacity: 0.1;
+    }
+    .game-screenshot-ph span { position: relative; z-index: 1; }
+
+    .game-screenshot {
+      width: 100%;
+    }
+
+  .game-screenshot img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+
+
+    .about-meta { display: flex; flex-direction: column; gap: 1px; }
+
+    .meta-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.9rem 1.25rem;
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .meta-key {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+    }
+    .meta-val { font-size: 13px; color: var(--text); font-weight: 400; }
+    .meta-val.accent { color: var(--accent); }
+
+    .about-desc {
+      margin-top: 1.5rem;
+      font-size: 14px; color: var(--muted); line-height: 1.85;
+    }
+
+    /* ─── FEATURES ──────────────────────────────────────────── */
+    #features { padding: 6rem 0; border-bottom: 1px solid var(--border); }
+
+    .section-eyebrow {
+      display: block; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.35em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300; color: var(--text); line-height: 1.15;
+      margin-bottom: 3rem;
+    }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 2rem 1.75rem;
+      transition: background 0.2s;
+    }
+    .feature-card:hover { background: var(--surface2); }
+
+    .feature-num {
+      display: block; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .feature-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; font-weight: 400; color: var(--text);
+      margin-bottom: 0.75rem; line-height: 1.2;
+    }
+    .feature-desc { font-size: 13px; color: var(--dim); line-height: 1.7; }
+
+    /* ─── SCREENSHOTS ───────────────────────────────────────── */
+    #screenshots { padding: 6rem 0; border-bottom: 1px solid var(--border); }
+
+    .screenshots-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border); margin-top: 3rem;
+    }
+    .screenshot-ph {
+      aspect-ratio: 16/9;
+      background: var(--surface2);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.5rem; cursor: pointer; position: relative; overflow: hidden;
+      transition: background 0.2s;
+    }
+    .screenshot-ph:hover { background: #222228; }
+    .screenshot-ph::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 104'%3E%3Cpolygon points='60,0 120,104 0,104' fill='%231b1b1f' stroke='%23222226' stroke-width='1'/%3E%3Cpolygon points='0,0 120,0 0,104' fill='%23181820' stroke='%23222226' stroke-width='1'/%3E%3Cpolygon points='120,0 120,104 0,104' fill='%231a1a1e' stroke='%23222226' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 60px 52px; opacity: 0.9;
+    }
+    .screenshot-ph-label {
+      position: relative; z-index: 1;
+      font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--border);
+    }
+    .screenshot-ph-num {
+      position: relative; z-index: 1;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 300; color: var(--surface2);
+    }
+    /* When you have real images, replace .screenshot-ph with:
+       <img src="imgz/dead-sector-01.jpg" alt="Dead Sector Screenshot 1"> */
+
+    /* ─── STORY ─────────────────────────────────────────────── */
+    #story {
+      padding: 7rem 0;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .story-inner { max-width: 640px; margin: 0 auto; }
+
+    .story-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.35em;
+      color: var(--hot); text-transform: uppercase; margin-bottom: 2rem;
+      display: block;
+    }
+    .story-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+      font-weight: 300; font-style: italic;
+      color: var(--muted); line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .story-text strong { color: var(--text); font-style: normal; font-weight: 400; }
+
+    .story-detail {
+      font-size: 14px; color: var(--dim); line-height: 1.85;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ─── NOTIFY / WISHLIST BANNER ──────────────────────────── */
+    #wishlist {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .wishlist-inner {
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .wishlist-inner h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 300; color: var(--text); line-height: 1.2;
+    }
+    .wishlist-inner p { font-size: 14px; color: var(--muted); margin-top: 0.5rem; }
+    .wishlist-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; flex-shrink: 0; }
+
+    /* ─── STUDIO ────────────────────────────────────────────── */
+    #studio { padding: 5rem 0; border-bottom: 1px solid var(--border); }
+    .studio-inner {
+      display: flex; gap: 3rem; align-items: center; flex-wrap: wrap;
+    }
+    .studio-badge {
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.75rem; display: block;
+    }
+    .studio-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 300; color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .studio-desc { font-size: 13px; color: var(--muted); line-height: 1.8; max-width: 480px; }
+    .studio-link {
+      display: inline-block; margin-top: 1.25rem;
+      font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); border-bottom: 1px solid rgba(200,150,60,0.4);
+      padding-bottom: 0.2rem; transition: border-color 0.2s;
+    }
+    .studio-link:hover { border-color: var(--accent); }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer {
+      padding: 1.5rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.75rem;
+    }
+    footer p { font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 11px; letter-spacing: 0.08em; color: var(--dim);
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--muted); }
+
+    /* ─── REVEAL ────────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.08s; } .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; } .d4 { transition-delay: 0.32s; }
+    .d5 { transition-delay: 0.40s; } .d6 { transition-delay: 0.48s; }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .screenshots-grid { grid-template-columns: 1fr; }
+      .wishlist-inner { flex-direction: column; align-items: flex-start; gap: 2rem; }
+      .nav-right .nav-link { display: none; }
+      .nav-back { display: none; }
+    }
+    @media (max-width: 560px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      footer { flex-direction: column; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none; }
+      .hero-badge::before { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────── -->
+  <nav id="nav">
+    <div class="nav-left">
+      <a href="#" class="nav-game-title">Dead Sector</a>
+      <a href="games.html" class="nav-back" style="display: none;">← All Games</a>
+    </div>
+    <div class="nav-right">
+      <a href="#about"      class="nav-link">About</a>
+      <a href="#features"   class="nav-link">Features</a>
+      <a href="https://www.instagram.com/speaking.pictures" class="nav-wishlist" target="_blank">Follow</a>
+    </div>
+  </nav>
+
+
+  <!-- ─── HERO ─────────────────────────────────────────────── -->
+  <!--
+    TO ADD KEY ART:
+    Replace the body background-color with a background-image on .hero::after,
+    or add an <img> tag inside .hero with position:absolute and z-index:0.
+    The terrain silhouette (.hero-terrain) will remain on top.
+  -->
+  <section class="hero"  ">
+    <div class="hero-bg" style="background-image: url('imgz/deadSector/1.png'); "></div>
+    <div class="hero-inner">
+      <div class="hero-badge">In Development &nbsp;·&nbsp; Unreal Engine 5</div>
+
+      <h1 class="hero-title">Dead<br>Sector</h1>
+
+      <p class="hero-tagline">The city fell. You didn't.</p>
+      <p class="hero-sub">
+        Top-down shooter &nbsp;<span>·</span>&nbsp; Low-poly &nbsp;<span>·</span>&nbsp; Up to 4 players
+      </p>
+
+      <div class="hero-actions" >
+        <a href="#features" target="_blank" rel="noopener" class="btn btn-primary">
+          Features
+        </a>
+        <a href="https://itch.io" target="_blank" rel="noopener" class="btn btn-secondary"  style="display: none;">
+          Demo on itch.io
+        </a>
+      </div>
+
+      <div class="hero-platforms">
+        <span>PC</span>
+        <span>Console</span>
+        <span>Co-op</span>
+      </div>
+    </div>
+
+    <div class="hero-terrain" aria-hidden="true"></div>
+  </section>
+
+
+  <!-- ─── ABOUT ────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <!-- Replace this div with <img src="imgz/dead-sector-keyart.jpg" alt="Dead Sector"> when ready -->
+
+        <div class="game-screenshot reveal">
+          <img src="imgz/deadSector/2.png" alt="Dead Sector">
+        </div>
+
+        <div class="reveal d2">
+          <div class="about-meta">
+            <div class="meta-row">
+              <span class="meta-key">Genre</span>
+              <span class="meta-val">Top-Down Shooter</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Mode</span>
+              <span class="meta-val accent">Co-op · 1–4 Players</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Platform</span>
+              <span class="meta-val">PC · Console</span>
+            </div>
+            <div class="meta-row"  style="display: none;">
+              <span class="meta-key">Engine</span>
+              <span class="meta-val">Unreal Engine 5</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Style</span>
+              <span class="meta-val">Low-Poly</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Status</span>
+              <span class="meta-val accent">In Development</span>
+            </div>
+          </div>
+
+          <p class="about-desc">
+            Dead Sector is a squad-based top-down zombie shooter set in the ruins of a quarantined megacity. 
+            Up to four players fight through procedurally influenced city districts — managing ammunition, 
+            coordinating flanks, and racing to extract before the horde overwhelms them.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── FEATURES ─────────────────────────────────────────── -->
+  <section id="features">
+    <div class="container">
+      <span class="section-eyebrow reveal">Gameplay</span>
+      <h2 class="section-title reveal d1">What makes Dead Sector<br>worth fighting for.</h2>
+
+      <div class="features-grid">
+
+        <div class="feature-card reveal d1">
+          <span class="feature-num">01</span>
+          <h3 class="feature-title">Squad Co-op</h3>
+          <p class="feature-desc">2–4 player online co-op. Each run rewards coordination over individual skill. A squad that communicates survives. One that doesn't, doesn't.</p>
+        </div>
+
+        <div class="feature-card reveal d2">
+          <span class="feature-num">02</span>
+          <h3 class="feature-title">Endless Horde</h3>
+          <p class="feature-desc">Wave-based escalation across procedurally influenced city districts. No two runs are identical. The horde adapts to how your squad moves and holds position.</p>
+        </div>
+
+        <div class="feature-card reveal d3">
+          <span class="feature-num">03</span>
+          <h3 class="feature-title">Low-Poly Worlds</h3>
+          <p class="feature-desc">A deliberate visual identity — clean geometry, dramatic directional lighting, no visual noise. Built to run sharp at high framerates even in peak combat.</p>
+        </div>
+
+        <div class="feature-card reveal d4">
+          <span class="feature-num">04</span>
+          <h3 class="feature-title">Gear &amp; Salvage</h3>
+          <p class="feature-desc">Between waves, spend salvaged materials on weapons, fortifications, and squad upgrades. Permanent unlocks carry across sessions and reward long-term play.</p>
+        </div>
+
+        <div class="feature-card reveal d5">
+          <span class="feature-num">05</span>
+          <h3 class="feature-title">Extraction Runs</h3>
+          <p class="feature-desc">Every session ends at an extraction point. Reach it. Hold it. Get out. The last stretch is always the most dangerous — that's intentional.</p>
+        </div>
+
+        <div class="feature-card reveal d6">
+          <span class="feature-num">06</span>
+          <h3 class="feature-title">Class System</h3>
+          <p class="feature-desc">Four distinct loadout archetypes — Scout, Heavy, Medic, Demo. Each plays differently and builds laterally through mastery, not grinding.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── SCREENSHOTS ──────────────────────────────────────── -->
+  <section id="screenshots" style="display: none;">
+    <div class="container">
+      <span class="section-eyebrow reveal">Screenshots</span>
+      <h2 class="section-title reveal d1">In-game captures.</h2>
+      <!-- Note: replace .screenshot-ph divs with <img> tags when you have real screenshots -->
+
+      <div class="screenshots-grid">
+        <div class="screenshot-ph reveal d1">
+          <span class="screenshot-ph-num">01</span>
+          <span class="screenshot-ph-label">Replace with screenshot</span>
+        </div>
+        <div class="screenshot-ph reveal d2">
+          <span class="screenshot-ph-num">02</span>
+          <span class="screenshot-ph-label">Replace with screenshot</span>
+        </div>
+        <div class="screenshot-ph reveal d3">
+          <span class="screenshot-ph-num">03</span>
+          <span class="screenshot-ph-label">Replace with screenshot</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── STORY ────────────────────────────────────────────── -->
+  <section id="story">
+    <div class="container">
+      <div class="story-inner">
+        <span class="story-label reveal">The Setting</span>
+        <p class="story-text reveal d1">
+          <strong>Sector 9.</strong> Twelve days after the outbreak began, the government sealed the perimeter and declared the eastern districts unsalvageable. Everyone inside was left to manage on their own.
+        </p>
+        <p class="story-detail reveal d2">
+          The evacuation that never came. The radio that went silent on day four. Three million people, written off in a single press briefing. The horde didn't wait for permission — and neither did the survivors who refused to become statistics. Dead Sector is set in the weeks that followed: no rescue, no rules, no retreat.
+        </p>
+        <a href="https://www.instagram.com/speaking.pictures" class="btn btn-primary reveal d3" target="_blank">Follow Development</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── WISHLIST BANNER ───────────────────────────────────── -->
+  <section id="wishlist"  style="display: none;">
+    <div class="container">
+      <div class="wishlist-inner reveal">
+        <div>
+          <h2>Don't miss the launch.</h2>
+          <p>Wishlist on Steam to be notified the moment Dead Sector goes live.</p>
+        </div>
+        <div class="wishlist-actions">
+          <a href="https://store.steampowered.com" target="_blank" rel="noopener" class="btn btn-primary">
+            Wishlist on Steam
+          </a>
+          <a href="https://itch.io" target="_blank" rel="noopener" class="btn btn-secondary">
+            Demo on itch.io
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── STUDIO ───────────────────────────────────────────── -->
+  <section id="studio">
+    <div class="container">
+      <div class="studio-inner reveal">
+        <div>
+          <span class="studio-badge">Developer</span>
+          <h3 class="studio-name">Speaking Pictures</h3>
+          <p class="studio-desc">
+            Dead Sector is an original IP by Speaking Pictures Entertainment — a Mumbai-based creative technology studio building games, virtual production, 3D content, and AI media. This is our first commercial title.
+          </p>
+          <a href="index.html" class="studio-link">Back →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── FOOTER ───────────────────────────────────────────── -->
+  <footer>
+    <p>© [YEAR] Speaking Pictures Entertainment Pvt. Ltd. &nbsp;·&nbsp; Dead Sector</p>
+    <div class="footer-links">
+      <a href="index.html">Studio</a>
+      <a href="games.html">All Games</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="#">Press Kit</a>
+    </div>
+  </footer>
+
+
+  <!-- ─── JS ──────────────────────────────────────────────── -->
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

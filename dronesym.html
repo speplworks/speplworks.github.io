@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DefenceDroneSim — India's first game-grade, AI-driven military drone pilot training simulator. Built for Indian Armed Forces, BSF and Defence R&D.">
+  <meta property="og:title" content="DefenceDroneSim — Train the Mission.">
+  <meta property="og:description" content="A living, AI-driven border world for India's drone crews. Built by Speaking Pictures Entertainment Pvt. Ltd.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon_32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon_16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon_180.png">
+
+  <title>DefenceDroneSim — Train the Mission.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── TOKENS (identical to Speaking Pictures) ─────────────── */
+    :root {
+      --bg:       #0C0C0C;
+      --surface:  #141414;
+      --surface2: #1C1C1C;
+      --text:     #EDEBE6;
+      --muted:    #888580;
+      --dim:      #4A4845;
+      --accent:   #C8963C;
+      --border:   #282828;
+      --max:      1080px;
+    }
+
+    /* ─── BASE ───────────────────────────────────────────────── */
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .display { font-family: 'Cormorant Garamond', Georgia, serif; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+    section { padding: 6rem 0; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.5rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(12,12,12,0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo img { height: 36px; width: auto; display: block; }
+    .nav-logo-text {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.3em;
+      color: var(--text); text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-link {
+      font-size: 11px; letter-spacing: 0.1em; color: var(--muted);
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      color: var(--accent); text-transform: uppercase;
+      border: 1px solid rgba(200,150,60,0.5); padding: 0.55rem 1.25rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+    /* ─── BUTTONS ────────────────────────────────────────────── */
+    .btn {
+      display: inline-block; font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+      text-transform: uppercase; padding: 0.9rem 2rem;
+      transition: all 0.2s; cursor: pointer; border: none;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: #d9a548; }
+    .btn-outline { border: 1px solid var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--muted); color: var(--text); }
+
+    /* ─── EYEBROW ────────────────────────────────────────────── */
+    .eyebrow {
+      display: block; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.35em; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+
+    /* ─── REVEAL ─────────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .delay-1 { transition-delay: 0.08s; }
+    .delay-2 { transition-delay: 0.16s; }
+    .delay-3 { transition-delay: 0.24s; }
+    .delay-4 { transition-delay: 0.32s; }
+    .delay-5 { transition-delay: 0.40s; }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      position: relative; min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 9rem 2rem 7rem; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: -80px;
+      background-image:
+        linear-gradient(rgba(40,40,40,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(40,40,40,0.4) 1px, transparent 1px);
+      background-size: 72px 72px;
+      animation: grid-drift 26s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes grid-drift {
+      0%   { transform: translate(0,0); }
+      100% { transform: translate(72px,72px); }
+    }
+    /* Hero bg image placeholder */
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(12,12,12,0.55) 0%, rgba(12,12,12,0.75) 100%);
+      /* ↓ REPLACE with your hero image */
+      /* background-image: url('imgz/dronesim_hero.jpg'); */
+      background-size: cover; background-position: center;
+      pointer-events: none;
+        /* 3. Set your desired background image opacity here (0.0 to 1.0) */
+      opacity: 0.4; 
+  
+      /* 4. Push the image behind the text content layer */
+      z-index: 0; 
+    }
+    .hero-frame {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .hero-frame::before, .hero-frame::after {
+      content: ''; position: absolute;
+      left: 2.5rem; right: 2.5rem;
+      height: 1px; background: var(--accent); opacity: 0.22;
+    }
+    .hero-frame::before { top: 17%; }
+    .hero-frame::after  { bottom: 17%; }
+
+    /* Radar ping — decorative */
+    .hero-radar {
+      position: absolute; bottom: 22%; right: 8%;
+      width: 120px; height: 120px; pointer-events: none; opacity: 0.15;
+    }
+    .hero-radar circle { fill: none; stroke: var(--accent); }
+    .radar-ping {
+      transform-origin: 60px 60px;
+      animation: radar-sweep 3s linear infinite;
+    }
+    @keyframes radar-sweep {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 820px; }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.35em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 2rem;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.8rem, 10vw, 7.5rem);
+      font-weight: 300; line-height: 1.0;
+      color: var(--text); letter-spacing: -0.01em; margin-bottom: 1.75rem;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      font-size: 15px; color: var(--text); line-height: 1.8;
+      max-width: 540px; margin: 0 auto 3rem;
+    }
+    .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem; z-index: 1;
+    }
+    .hero-scroll span { font-size: 9px; letter-spacing: 0.3em; color: var(--dim); text-transform: uppercase; }
+    .hero-scroll-line {
+      width: 1px; height: 36px;
+      background: linear-gradient(to bottom, transparent, var(--dim));
+      animation: line-drop 2s ease-in-out infinite;
+    }
+    @keyframes line-drop {
+      0%, 100% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+      50%       { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* ─── SECTION TITLE ──────────────────────────────────────── */
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 300; color: var(--text); line-height: 1.2;
+    }
+
+    /* ─── MISSION BRIEF ──────────────────────────────────────── */
+    #mission { border-top: 1px solid var(--border); }
+    .mission-grid {
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem; align-items: center;
+    }
+    .mission-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 300; line-height: 1.25;
+      color: var(--text); margin-bottom: 1.5rem;
+    }
+    .mission-body { font-size: 15px; color: var(--muted); line-height: 1.85; }
+    .mission-body + .mission-body { margin-top: 1rem; }
+    .mission-stats { display: flex; flex-direction: column; gap: 1px; }
+    .stat {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 1.4rem 2rem; display: flex;
+      justify-content: space-between; align-items: baseline;
+    }
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 300;
+      color: var(--accent); line-height: 1;
+    }
+    .stat-label { font-size: 10px; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; }
+
+    /* ─── HERO IMAGE BAND ────────────────────────────────────── */
+    .img-band {
+      width: 100%; aspect-ratio: 21/6; overflow: hidden;
+      background: var(--surface2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; position: relative;
+      /* 3. Set your desired background image opacity here (0.0 to 1.0) */
+      opacity: 1; 
+  
+      /* 4. Push the image behind the text content layer */
+      z-index: 0; 
+    }
+    /* ↓ REPLACE src in the <img> tag below with your actual wide screenshot */
+    .img-band img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-band-ph {
+      font-size: 11px; letter-spacing: 0.3em; color: var(--border);
+      text-transform: uppercase; text-align: center;
+    }
+
+    /* ─── THREAT / WHY NOW ───────────────────────────────────── */
+    #threat { border-top: 1px solid var(--border); }
+    .threat-intro {
+      max-width: 680px; margin-bottom: 3.5rem;
+    }
+    .threat-intro .section-title { margin-bottom: 1.25rem; }
+    .threat-intro p { font-size: 15px; color: var(--muted); line-height: 1.85; }
+    .threat-cards {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; background: var(--border);
+    }
+    .threat-card {
+      background: var(--surface); padding: 2rem 1.5rem;
+      transition: background 0.25s;
+    }
+    .threat-card:hover { background: var(--surface2); }
+    .threat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 300;
+      color: var(--accent); line-height: 1; margin-bottom: 0.5rem;
+    }
+    .threat-unit { font-size: 11px; letter-spacing: 0.15em; color: var(--dim); text-transform: uppercase; margin-bottom: 1rem; }
+    .threat-label { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* ─── FEATURES ───────────────────────────────────────────── */
+    #features { border-top: 1px solid var(--border); }
+    .features-head { margin-bottom: 3rem; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+    }
+    .feat-card {
+      background: var(--surface); padding: 2rem 1.75rem;
+      transition: background 0.25s;
+    }
+    .feat-card:hover { background: var(--surface2); }
+    .feat-icon {
+      width: 36px; height: 36px; margin-bottom: 1.25rem;
+      color: var(--accent);
+    }
+    .feat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 400;
+      color: var(--text); margin-bottom: 0.6rem;
+    }
+    .feat-desc { font-size: 13px; color: var(--dim); line-height: 1.65; }
+    .feat-tag {
+      display: inline-block; margin-top: 1rem;
+      font-size: 10px; letter-spacing: 0.15em;
+      color: var(--accent); text-transform: uppercase;
+    }
+
+    /* ─── SCENARIOS ──────────────────────────────────────────── */
+    #scenarios { border-top: 1px solid var(--border); }
+    .scenarios-head { margin-bottom: 3rem; }
+    .scenario-list { display: flex; flex-direction: column; gap: 1px; }
+    .scenario-row {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 1.75rem 2rem;
+      display: grid; grid-template-columns: 2.5rem 1fr auto;
+      gap: 1.5rem; align-items: center;
+      transition: background 0.25s;
+    }
+    .scenario-row:hover { background: var(--surface2); }
+    .scenario-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: var(--accent); font-weight: 300;
+    }
+    .scenario-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 0.2rem; }
+    .scenario-desc { font-size: 13px; color: var(--muted); }
+    .scenario-tag {
+      font-size: 10px; letter-spacing: 0.15em;
+      color: var(--dim); text-transform: uppercase; white-space: nowrap;
+    }
+
+    /* ─── AI SECTION ─────────────────────────────────────────── */
+    #ai { border-top: 1px solid var(--border); }
+    .ai-grid {
+      display: grid; grid-template-columns: 1fr 1.5fr;
+      gap: 5rem; align-items: start;
+    }
+    .ai-left .section-title { margin-bottom: 1.25rem; }
+    .ai-left p { font-size: 14px; color: var(--muted); line-height: 1.85; }
+    .ai-left p + p { margin-top: 0.9rem; }
+    .ai-kits { display: flex; flex-direction: column; gap: 1px; }
+    .ai-kit {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: background 0.25s;
+    }
+    .ai-kit:hover { background: var(--surface2); }
+    .ai-kit-badge {
+      flex-shrink: 0; width: 32px; height: 32px;
+      background: rgba(200,150,60,0.12);
+      border: 1px solid rgba(200,150,60,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.05em;
+    }
+    .ai-kit-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.2rem; }
+    .ai-kit-desc { font-size: 12px; color: var(--dim); line-height: 1.55; }
+
+    /* ─── PLATFORM IMAGE ─────────────────────────────────────── */
+    .platform-img-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      margin-top: 3rem;
+    }
+    .platform-img-cell {
+      background: var(--surface2); aspect-ratio: 16/9;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 1.5rem; position: relative; overflow: hidden;
+    }
+    /* ↓ REPLACE with real screenshots */
+    .platform-img-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .platform-img-label {
+      position: relative; z-index: 1;
+      font-size: 10px; letter-spacing: 0.25em; color: var(--dim);
+      text-transform: uppercase; text-align: center;
+    }
+    .platform-img-name {
+      position: relative; z-index: 1;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; color: var(--text); margin-top: 0.5rem;
+    }
+
+    /* ─── PLATFORMS ──────────────────────────────────────────── */
+    #platforms { border-top: 1px solid var(--border); }
+    .plat-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border); margin-top: 2.5rem;
+    }
+    .plat-card {
+      background: var(--surface); padding: 2.25rem 2rem;
+      transition: background 0.25s;
+    }
+    .plat-card:hover { background: var(--surface2); }
+    .plat-tag {
+      font-size: 10px; letter-spacing: 0.2em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .plat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400;
+      color: var(--text); margin-bottom: 1rem;
+    }
+    .plat-specs { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .plat-specs li {
+      font-size: 13px; color: var(--muted);
+      padding-left: 1rem; position: relative;
+    }
+    .plat-specs li::before {
+      content: '—'; position: absolute; left: 0;
+      color: var(--dim);
+    }
+
+    /* ─── VR / ROADMAP ───────────────────────────────────────── */
+    #roadmap { border-top: 1px solid var(--border); }
+    .roadmap-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 5rem; align-items: center;
+    }
+    .roadmap-left .section-title { margin-bottom: 1.25rem; }
+    .roadmap-left p { font-size: 14px; color: var(--muted); line-height: 1.85; }
+    .roadmap-items { display: flex; flex-direction: column; gap: 0.6rem; }
+    .roadmap-item {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 1rem 1.5rem; display: flex; gap: 1rem; align-items: center;
+      transition: background 0.25s;
+    }
+    .roadmap-item:hover { background: var(--surface2); }
+    .roadmap-phase {
+      font-size: 10px; letter-spacing: 0.15em;
+      color: var(--accent); text-transform: uppercase;
+      white-space: nowrap; min-width: 5rem;
+    }
+    .roadmap-desc { font-size: 13px; color: var(--muted); }
+
+    /* ─── CTA / CONTACT ──────────────────────────────────────── */
+    #contact {
+      border-top: 1px solid var(--border);
+      text-align: center; padding: 9rem 2rem;
+    }
+    .contact-eyebrow { color: var(--muted); margin-bottom: 2rem; }
+    .contact-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 300; color: var(--text);
+      line-height: 1.1; margin-bottom: 1.5rem;
+    }
+    .contact-sub {
+      font-size: 15px; color: var(--muted);
+      max-width: 500px; margin: 0 auto 3rem; line-height: 1.8;
+    }
+    .contact-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .contact-meta {
+      margin-top: 2rem; font-size: 12px;
+      letter-spacing: 0.15em; color: var(--dim); text-transform: uppercase;
+    }
+    .contact-meta a { color: var(--accent); transition: color 0.2s; }
+    .contact-meta a:hover { color: #d9a548; }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 11px; color: var(--dim); letter-spacing: 0.1em; }
+    .footer-back { font-size: 11px; color: var(--dim); letter-spacing: 0.1em; transition: color 0.2s; }
+    .footer-back:hover { color: var(--accent); }
+
+    /* ─── DIVIDER LINE ───────────────────────────────────────── */
+    .rule { height: 1px; background: var(--border); margin: 0; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      section { padding: 4.5rem 0; }
+      .mission-grid, .ai-grid, .roadmap-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .threat-cards { grid-template-columns: repeat(2,1fr); }
+      .features-grid { grid-template-columns: repeat(2,1fr); }
+      .plat-grid { grid-template-columns: 1fr; }
+      .platform-img-row { grid-template-columns: 1fr; }
+      .scenario-row { grid-template-columns: 2.5rem 1fr; }
+      .scenario-tag { display: none; }
+    }
+    @media (max-width: 560px) {
+      .threat-cards { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .nav-links .nav-link { display: none; }
+      footer { flex-direction: column; gap: 0.4rem; text-align: center; }
+      #contact { padding: 6rem 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero::before { animation: none; }
+      .hero-scroll-line { animation: none; }
+      .reveal { transition: none; }
+      .radar-ping { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────────── -->
+<nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <!-- Replace with actual logo or text -->
+    <img src="imgz/logo.png" alt="Speaking Pictures" height="36"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <span class="nav-logo-text" style="display:none">Speaking Pictures</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features"  class="nav-link">Features</a>
+    <a href="#scenarios" class="nav-link">Scenarios</a>
+    <a href="#platforms" class="nav-link">Platforms</a>
+    <a href="#contact"   class="nav-cta">Request Briefing</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <!-- IMAGE PLACEHOLDER: replace background-image URL below with your hero image (drone flying at night / border terrain) -->
+  <div class="hero-bg" style="background-image: url('imgz/droneSym/D1.png'); "></div>
+  <div class="hero-frame" aria-hidden="true"></div>
+
+  <!-- Decorative radar -->
+  <svg class="hero-radar" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="60" r="55" stroke-width="0.5" opacity="0.6"/>
+    <circle cx="60" cy="60" r="38" stroke-width="0.5" opacity="0.4"/>
+    <circle cx="60" cy="60" r="20" stroke-width="0.5" opacity="0.3"/>
+    <line x1="60" y1="60" x2="60" y2="5" stroke="var(--accent)" stroke-width="1" opacity="0.8" class="radar-ping"/>
+  </svg>
+
+  <div class="hero-inner">
+    <p class="hero-eyebrow reveal">[ Drone Sym ] </p>
+    <h1 class="hero-title display reveal delay-1">
+      Train the<br><em>mission.</em>
+    </h1>
+    <p class="hero-sub reveal delay-2">
+      We are building a game-grade, PC-based drone simulator purpose-built for professional pilot training. 
+      Powered by AI-driven enemies, dynamic NPCs, and unpredictable events, our simulator features terrains generated from real-world heightmap data and cities mapped from accurate geographic information. 
+      This allows pilots to log virtual flight hours before ever taking to the skies.
+      This is not a generic flight sim. No scripted corridors. No predictable patterns. 
+      Just real-world scenarios, rendered with precision—repeated as many times as needed to master the craft. 
+      A living, breathing border world. Real threats. Authentic terrain. Unlimited repetitions.
+    </p>
+    <div class="hero-actions reveal delay-3">
+      <a href="#features"  class="btn btn-primary">Explore Features</a>
+      <a href="#contact"   class="btn btn-outline">Request Briefing</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ─── MISSION BRIEF ────────────────────────────────────────── -->
+<section id="mission">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="reveal">
+        <span class="eyebrow">The Mission</span>
+        <h2 class="mission-title">A living border world — not a generic flight trainer.</h2>
+        <p class="mission-body">
+          DroneSym is a PC-based, GPU-accelerated simulation built on Unreal Engine 5.
+          It reproduces the exact flight behaviour of in-service indigenous platforms,
+          populates the world with adaptive AI enemies, friendly NPC ground crew and animal NPCs,
+          and drops operators into real heightmap terrain of India's border sectors — at any hour, in any weather.
+        </p>
+        <p class="mission-body" style="margin-top:1.2rem;">
+          Every scenario is an event-driven system: fire a flare and the village dogs bark;
+          fly too low over cattle and the herd scatters; trigger a jamming event and your HUD
+          goes to static. No scripted railroads. A different experience every time.
+        </p>
+      </div>
+      <div class="mission-stats reveal delay-2">
+        <div class="stat">
+          <span class="stat-val">100+</span>
+          <span class="stat-label">Strategic 3D Environments</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val">6+</span>
+          <span class="stat-label">Playable Scenarios</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val">6</span>
+          <span class="stat-label">AI Capability Kits</span>
+        </div>
+        <div class="stat">
+          <span class="stat-val">15–18<span style="font-size:1.2rem">mo</span></span>
+          <span class="stat-label">To Operational Capability</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WIDE IMAGE BAND ──────────────────────────────────────── -->
+<!-- IMAGE PLACEHOLDER: replace the placeholder div below with <img src="imgz/dronesim_wide.jpg" alt="..."> once you have the screenshot -->
+<div class="img-band"  style="background-image: url('imgz/droneSym/D7.png'); background-size: cover; background-position: center;">
+  <div class="img-band-ph">[ also available on real terrains heightmaps & cities ]</div>
+</div>
+
+<!-- ─── THREAT / WHY NOW ─────────────────────────────────────── -->
+<section id="threat">
+  <div class="container">
+    <div class="threat-intro reveal">
+      <span class="eyebrow">Why Now</span>
+      <h2 class="section-title">The border is already<br>a drone battleground.</h2>
+      <p style="margin-top:1.25rem;">
+        Hostile networks use small, commercial-grade quadcopters to push narcotics, weapons and
+        explosives across India's western frontier — low, fast, at night. The numbers from a
+        single frontier, in a single year, tell the story.
+      </p>
+    </div>
+    <div class="threat-cards">
+      <div class="threat-card reveal delay-1">
+        <div class="threat-num">272<span style="font-size:1.5rem">+</span></div>
+        <div class="threat-unit">Rogue drones neutralised</div>
+        <p class="threat-label">Punjab frontier, 2025. BSF-reported figure. Year-on-year rise.</p>
+      </div>
+      <div class="threat-card reveal delay-2">
+        <div class="threat-num">367<span style="font-size:1.5rem">kg</span></div>
+        <div class="threat-unit">Heroin seized</div>
+        <p class="threat-label">Narcotics dropped by drone at night, single patrol sector.</p>
+      </div>
+      <div class="threat-card reveal delay-3">
+        <div class="threat-num">10<span style="font-size:1.5rem">kg</span></div>
+        <div class="threat-unit">RDX + 12 grenades</div>
+        <p class="threat-label">Explosives smuggled across the fence by drone in the same period.</p>
+      </div>
+      <div class="threat-card reveal delay-4">
+        <div class="threat-num">200<span style="font-size:1.5rem">+</span></div>
+        <div class="threat-unit">Weapons recovered</div>
+        <p class="threat-label">Small arms. Ammunition. The mission is real and continuous.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="features-head reveal">
+      <span class="eyebrow">What It Does</span>
+      <h2 class="section-title">Nine capability pillars.<br>One integrated world.</h2>
+    </div>
+    <div class="features-grid">
+
+      <div class="feat-card reveal delay-1">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <h3 class="feat-name">Flight Dynamics & Physics</h3>
+        <p class="feat-desc">Per-platform flight models for SWITCH-class ISR VTOL and Sabal-class logistics drone. Wind, altitude, payload mass, battery drain, failure modes — all physically simulated.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-2">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <h3 class="feat-name">ISR & Counter-Drone Interdiction</h3>
+        <p class="feat-desc">Train the full detect–classify–track–respond loop against narco and infiltration drones. EO, IR/thermal, radar, RF and acoustic sensor feeds — fused and interactive.</p>
+        <span class="feat-tag">Core · Mission-critical</span>
+      </div>
+
+      <div class="feat-card reveal delay-3">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <h3 class="feat-name">AI Capability Stack</h3>
+        <p class="feat-desc">Six AI kits: friendly drone autonomy, adaptive enemy NPCs, co-pilot & intelligent tutor, civilian population, sensor-AI teaming, and procedural scenario generation.</p>
+        <span class="feat-tag">Core + Roadmap</span>
+      </div>
+
+      <div class="feat-card reveal delay-1">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        <h3 class="feat-name">Real-World & Synthetic Terrain</h3>
+        <p class="feat-desc">10 environments: real DEM/heightmap data for Punjab, J&K, Himalayan, Rajasthan and Northeast sectors — plus synthetic training maps. Day/night, rain, fog, snow, dust storm.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-2">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <h3 class="feat-name">NPC Population — Friendly, Enemy & Animal</h3>
+        <p class="feat-desc">Ground crew, patrol guards, QRT, watch commanders. Hostile drone operators, smugglers, infiltrators, lookouts. Dogs, cattle, bird flocks, deer — all with behaviour trees.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-3">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+        </svg>
+        <h3 class="feat-name">VFX, Audio & Radio</h3>
+        <p class="feat-desc">Drone crash explosions, gunshot tracers, smoke trails, searchlight beams, EMP static, dust rotor-wash, signal flares. Walkie-talkie radio system with per-terrain ambient soundscapes.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-1">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+        <h3 class="feat-name">Instructor Tools & Analytics</h3>
+        <p class="feat-desc">Live monitoring of all trainees, scenario injection, full session recording, after-action review, AI-generated debrief, scoring, cohort analytics and certification export.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-2">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        </svg>
+        <h3 class="feat-name">Military Base Camp Environments</h3>
+        <p class="feat-desc">Forward Operating Base with drone hangar, command post and situation room, vehicle pool, QRT scramble, guard towers, border outpost and mobile command vehicle.</p>
+        <span class="feat-tag">Core</span>
+      </div>
+
+      <div class="feat-card reveal delay-3">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+        </svg>
+        <h3 class="feat-name">VR/XR Ready · Expandable</h3>
+        <p class="feat-desc">Built VR-ready via OpenXR — headset module (Varjo XR-4, Pico Enterprise) activatable without re-engineering. Scales from one laptop to a 10+ station networked centre.</p>
+        <span class="feat-tag">Architecture · Optional module</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── SCENARIOS ─────────────────────────────────────────────── -->
+<section id="scenarios">
+  <div class="container">
+    <div class="scenarios-head reveal">
+      <span class="eyebrow">Playable Scenarios</span>
+      <h2 class="section-title">Six missions. Infinite variations.</h2>
+    </div>
+
+    <!-- IMAGE PLACEHOLDER: 2-up screenshot row — replace img src when ready -->
+    <div class="platform-img-row reveal delay-1">
+      <div class="platform-img-cell" style="background-image: url('imgz/droneSym/D10.png'); background-size: cover; background-position: center; opacity: 1;">
+        <!-- <img src="imgz/scenario_night_intercept.jpg" alt="Night Narco-Drone Intercept"> -->
+        <span class="platform-img-label"> &nbsp; </span>
+        <span class="platform-img-name">Night Intercept</span>
+      </div>
+      <div class="platform-img-cell" style="background-image: url('imgz/droneSym/D8.png'); background-size: cover; background-position: center; opacity: 1;">
+        <!-- <img src="imgz/scenario_mountain.jpg" alt="High-Altitude Logistics Resupply"> -->
+        <span class="platform-img-label"> &nbsp; </span>
+        <span class="platform-img-name">Mountain Resupply</span>
+      </div>
+    </div>
+
+    <div class="scenario-list" style="margin-top:1px;">
+      <div class="scenario-row reveal delay-1">
+        <span class="scenario-num">01</span>
+        <div>
+          <p class="scenario-name">Night Narco-Drone Intercept</p>
+          <p class="scenario-desc">Riverine frontier, 0200 hrs. Detect, classify and track a hostile quadcopter carrying contraband before it reaches the drop zone. Jamming kicks in mid-pursuit.</p>
+        </div>
+        <span class="scenario-tag">ISR · Counter-Drone</span>
+      </div>
+      <div class="scenario-row reveal delay-2">
+        <span class="scenario-num">02</span>
+        <div>
+          <p class="scenario-name">Infiltration Watch</p>
+          <p class="scenario-desc">Pre-dawn ISR sweep over a mountain ridgeline. Mixed shepherd activity and a potential crossing. Discriminate thermal contacts — four of them are goats.</p>
+        </div>
+        <span class="scenario-tag">ISR · Discrimination</span>
+      </div>
+      <div class="scenario-row reveal delay-3">
+        <span class="scenario-num">03</span>
+        <div>
+          <p class="scenario-name">High-Altitude Logistics Resupply</p>
+          <p class="scenario-desc">Sabal 20 at 4,800 m. Crosswind makes station-keeping a battle. Boom-rail delivery must land inside 3 metres. Battery drain is faster than the manual says.</p>
+        </div>
+        <span class="scenario-tag">Logistics · Precision Delivery</span>
+      </div>
+      <div class="scenario-row reveal delay-1">
+        <span class="scenario-num">04</span>
+        <div>
+          <p class="scenario-name">Swarm Response</p>
+          <p class="scenario-desc">Three hostile drones launch simultaneously from different azimuths. The swarm adapts if you prioritise one over the others. Coordinate with the QRT over radio.</p>
+        </div>
+        <span class="scenario-tag">Multi-Threat · Coordination</span>
+      </div>
+      <div class="scenario-row reveal delay-2">
+        <span class="scenario-num">05</span>
+        <div>
+          <p class="scenario-name">EW — Navigating Blind</p>
+          <p class="scenario-desc">Broadband jamming suppresses GPS and degrades your command link mid-mission. Navigate 8 km back on terrain features, compass and onboard waypoints.</p>
+        </div>
+        <span class="scenario-tag">EW · GPS-Denied</span>
+      </div>
+      <div class="scenario-row reveal delay-3">
+        <span class="scenario-num">06</span>
+        <div>
+          <p class="scenario-name">Base Camp Scramble</p>
+          <p class="scenario-desc">A hostile drone intrusion alert fires mid-prep. Prioritise, launch under pressure, manage the scramble as the base camp goes to alert posture around you.</p>
+        </div>
+        <span class="scenario-tag">Base Ops · Stress Training</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI ────────────────────────────────────────────────────── -->
+<section id="ai">
+  <div class="container">
+    <div class="ai-grid">
+      <div class="reveal">
+        <span class="eyebrow">Artificial Intelligence</span>
+        <h2 class="section-title" style="margin-bottom:1.25rem;">Not scripted.<br>Adaptive.</h2>
+        <p>AI is not a single feature — it is a stack of six cooperating kits. The enemy operator watches your patrol pattern and launches in your gap. The friendly tutor notices your gimbal was 20° off and tells you why you lost the contact. The goats scatter when you fly overhead.</p>
+        <p style="margin-top:0.9rem;">All AI runs fully offline, on-device. No cloud dependency. Data-sovereign. Training-only — never wired to any real fire-control system.</p>
+      </div>
+      <div class="ai-kits reveal delay-2">
+        <div class="ai-kit">
+          <div class="ai-kit-badge">BHV</div>
+          <div>
+            <p class="ai-kit-name">Drone Behaviour Kit (Friendly)</p>
+            <p class="ai-kit-desc">Autonomous modes — waypoint, terrain-follow, obstacle avoid, return-to-home, failsafe. Human-on-the-loop supervised autonomy.</p>
+          </div>
+        </div>
+        <div class="ai-kit">
+          <div class="ai-kit-badge">RED</div>
+          <div>
+            <p class="ai-kit-name">AI Adversary / Enemy Kit</p>
+            <p class="ai-kit-desc">Hostile drones fly plausible smuggling profiles. Ground adversaries evade, conceal and adapt. Lookout network relays patrol positions. Difficulty scales from predictable to reinforcement-learning adaptive.</p>
+          </div>
+        </div>
+        <div class="ai-kit">
+          <div class="ai-kit-badge">TUT</div>
+          <div>
+            <p class="ai-kit-name">AI Co-pilot & Intelligent Tutor</p>
+            <p class="ai-kit-desc">AI wingman in multi-UAV scenarios. Adaptive tutor adjusts difficulty per trainee. Automated debrief explains exactly what went wrong and why.</p>
+          </div>
+        </div>
+        <div class="ai-kit">
+          <div class="ai-kit-badge">NPC</div>
+          <div>
+            <p class="ai-kit-name">NPC / Population & Animal Kit</p>
+            <p class="ai-kit-desc">Civilian clutter — vehicles, people, livestock, birds. Thermal signatures designed to train discrimination. Every animal reacts to drone proximity, light and sound.</p>
+          </div>
+        </div>
+        <div class="ai-kit">
+          <div class="ai-kit-badge">ATR</div>
+          <div>
+            <p class="ai-kit-name">Sensor-AI / ATR Teaming</p>
+            <p class="ai-kit-desc">Simulated automatic target recognition on the EO/IR feed — with deliberate false alarms. Operators learn human-AI teaming and when to override the machine.</p>
+          </div>
+        </div>
+        <div class="ai-kit">
+          <div class="ai-kit-badge">GEN</div>
+          <div>
+            <p class="ai-kit-name">Procedural Generation & Analytics</p>
+            <p class="ai-kit-desc">Infinite scenario variation. Performance analytics, readiness scoring, cohort comparison. Random seed sharing so instructors can issue identical conditions to a whole class.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PLATFORMS ─────────────────────────────────────────────── -->
+<section id="platforms" style="display:none;">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow">Indigenous Platforms</span>
+      <h2 class="section-title">Modelling the airframes India actually flies.</h2>
+      <p style="font-size:14px; color:var(--muted); margin-top:1.25rem; max-width:600px; line-height:1.85;">
+        No foreign-OEM platforms. Full consistency with data sovereignty and Make in India positioning.
+        All specifications indicative — validated against OEM data during Phase 1.
+      </p>
+    </div>
+
+    <!-- IMAGE PLACEHOLDER: 2-up platform renders -->
+    <div class="platform-img-row reveal delay-1">
+      <div class="platform-img-cell">
+        <!-- <img src="imgz/switch_render.jpg" alt="ideaForge SWITCH VTOL"> -->
+        <span class="platform-img-label"> &nbsp; </span>
+        <span class="platform-img-name">ideaForge SWITCH</span>
+      </div>
+      <div class="platform-img-cell">
+        <!-- <img src="imgz/sabal_render.jpg" alt="EndureAir Sabal 20"> -->
+        <span class="platform-img-label"> &nbsp; </span>
+        <span class="platform-img-name">EndureAir Sabal 20</span>
+      </div>
+    </div>
+
+    <div class="plat-grid reveal delay-2">
+      <div class="plat-card">
+        <p class="plat-tag">ISR · Fixed-Wing VTOL Hybrid</p>
+        <h3 class="plat-name">ideaForge SWITCH / SWITCH V2</h3>
+        <ul class="plat-specs">
+          <li>~6.5 kg · Man-portable</li>
+          <li>~120 min endurance · ~15 km LOS range</li>
+          <li>EO high-zoom + thermal payload</li>
+          <li>High-altitude day/night ISR · Encrypted comms</li>
+          <li>In Indian Army service · 200-system order</li>
+        </ul>
+      </div>
+      <div class="plat-card">
+        <p class="plat-tag">Logistics · Tandem-Rotor</p>
+        <h3 class="plat-name">EndureAir Sabal 20</h3>
+        <ul class="plat-specs">
+          <li>~20 kg payload capacity</li>
+          <li>EO/IR turret · Autonomous boom-rail delivery</li>
+          <li>Failsafe parachute · Low acoustic signature</li>
+          <li>BVLOS capable</li>
+          <li>Inducted — Indian Army Eastern Theatre</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:12px; color:var(--dim); margin-top:1rem; text-align:right; letter-spacing:0.05em;">
+      Expansion: ideaForge ZOLT · EndureAir Sabal-200 · DRDO TAPAS-class on demand
+    </p>
+  </div>
+</section>
+
+<!-- ─── ROADMAP ───────────────────────────────────────────────── -->
+<section id="roadmap" style="display:none;">
+  <div class="container">
+    <div class="roadmap-grid">
+      <div class="reveal">
+        <span class="eyebrow">Delivery & Roadmap</span>
+        <h2 class="section-title" style="margin-bottom:1.25rem;">15–18 months to full operational capability.</h2>
+        <p>Three phases. PC-based core first, VR/XR module available as a selectable add-on. Designed to evolve with the threat — modular architecture so new platforms, adversaries and environments drop in.</p>
+        <p style="margin-top:0.9rem;">Runs fully offline, air-gapped, encrypted. No cloud dependency. Source-code escrow available. Aligned with Make in India and DAP 2020.</p>
+        <div style="margin-top:2rem;">
+          <a href="#contact" class="btn btn-primary">Request Full Briefing →</a>
+        </div>
+      </div>
+      <div class="roadmap-items reveal delay-2">
+        <div class="roadmap-item">
+          <span class="roadmap-phase">Phase 1</span>
+          <span class="roadmap-desc">Research & Foundation — feasibility, design, prototype flight models, SRS sign-off · 3–6 months</span>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-phase">Phase 2</span>
+          <span class="roadmap-desc">Full Development & Delivery — complete simulator, 10 environments, AI kits, hardware fit-out, FAT & UAT · ~12 months</span>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-phase">Phase 3</span>
+          <span class="roadmap-desc">Sustainment / AMC — updates, new platforms & scenarios, support, refresher training · Ongoing annual</span>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-phase">VR Module</span>
+          <span class="roadmap-desc">OpenXR-based immersive module (Varjo XR-4 / Pico Enterprise) — Phase 2 add-on or Phase 3 first deliverable</span>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-phase">Advanced AI</span>
+          <span class="roadmap-desc">Reinforcement-learning adaptive adversary · On-prem LLM natural-language tutor/debrief · Synthetic data export for real ATR training</span>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-phase">Multi-Site</span>
+          <span class="roadmap-desc">Networked LVC training across Army, IAF, BSF stations — joint-agency exercises at scale</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT / CTA ─────────────────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <span class="eyebrow contact-eyebrow reveal">Built in India. For India's defence.</span>
+    <h2 class="contact-title display reveal delay-1">
+      Ready to<br>brief your<br><em>team?</em>
+    </h2>
+    <p class="contact-sub reveal delay-2">
+      We welcome enquiries from the Indian Armed Forces, BSF, DRDO,
+      defence R&amp;D organisations, system integrators and strategic investors.
+      A confidential briefing deck and working demonstration are available on request.
+    </p>
+    <div class="contact-actions reveal delay-3">
+      <a href="mailto:hello@speaking.pictures?subject=DefenceDroneSim%20Briefing%20Request" class="btn btn-primary">Request a Briefing &nbsp;→</a>
+      <a href="index.html" class="btn btn-outline">BACK</a>
+    </div>
+    <div class="contact-meta reveal delay-4">
+      <a href="tel:+919582074400">+91 95820 74400</a>
+      &nbsp;·&nbsp;
+      <a href="mailto:hello@speaking.pictures">hello@speaking.pictures</a>
+      &nbsp;·&nbsp; Mumbai, India
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────────── -->
+<footer>
+  <p>© 2026 Speaking Pictures Entertainment Pvt. Ltd. — DefenceDroneSim</p>
+  <a href="index.html" class="footer-back">← Back to Speaking Pictures</a>
+</footer>
+
+<!-- ─── JS ───────────────────────────────────────────────────── -->
+<script>
+  // Nav scroll state
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+
+  // Scroll-reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Hide scroll hint
+  const scrollHint = document.querySelector('.hero-scroll');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) scrollHint.style.opacity = '0';
+  }, { passive: true, once: true });
+</script>
+
+</body>
+</html>
