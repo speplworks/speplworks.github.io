@@ -327,8 +327,8 @@
     JSON contract.
   </p>
   <div class="badge-row">
-    <span class="badge badge-blue">Blender 5.x</span>
-    <span class="badge badge-blue">Python 3.13</span>
+    <span class="badge badge-blue">Blender 4.2+</span>
+    <span class="badge badge-blue">Python 3.11+</span>
     <span class="badge badge-green">OSM · SRTM</span>
     <span class="badge badge-green">UE5 · Unity</span>
     <span class="badge badge-grey">28 Categories</span>
@@ -371,8 +371,9 @@
       <div class="step-body">
         <div class="step-title">Generate everything</div>
         <div class="step-desc">In <strong>3 · Generate City</strong>, click
-        <strong>GENERATE ALL</strong>. In ~15 seconds you have terrain, roads, buildings,
-        and optional signboards placed across the full city.</div>
+        <strong>GENERATE ALL</strong>. Time varies by area size — a 0.5 km² neighbourhood
+        takes ~30 s on 8 GB RAM; a 4 km² city takes several minutes. See the performance
+        guide for details.</div>
       </div>
     </li>
     <li>
@@ -400,7 +401,7 @@
   <h3>Requirements</h3>
   <table>
     <tr><th>Requirement</th><th>Version</th><th>Notes</th></tr>
-    <tr><td>Blender</td><td>5.x (recommended 5.1+)</td><td>Python 3.13 runtime</td></tr>
+    <tr><td>Blender</td><td>4.2+ (tested on 5.1)</td><td>Python 3.11+ runtime</td></tr>
     <tr><td>OS</td><td>Windows 10/11, macOS 13+, Ubuntu 22+</td><td></td></tr>
     <tr><td>Internet</td><td>Optional</td><td>Only for OSM download + SRTM elevation</td></tr>
     <tr><td>RAM</td><td>8 GB minimum, 16 GB recommended</td><td>For cities > 3 km²</td></tr>
@@ -511,6 +512,13 @@
       <div class="card-body">Samples real heights from OpenTopoData SRTM 30 m dataset.
       Needs internet. Set <strong>Grid</strong> for detail (higher = more API calls).
       Falls back to flat if the fetch fails.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🗺 Scene Object <span class="pill pill-new">Custom terrain</span></div>
+      <div class="card-body">Pick any mesh already in your scene — your own sculpt,
+      an imported heightmap/DEM, or a fictional landscape. Set <strong>Terrain Source →
+      Scene Object</strong>, pick the mesh, and click <strong>Use as Terrain</strong>.
+      CityMaker never modifies or deletes your object.</div>
     </div>
   </div>
 
@@ -680,64 +688,62 @@
 
   <h3>Using assets already in Unreal (Synty / Fab / marketplace)</h3>
   <p>Export with <strong>Export Meshes (FBX) OFF</strong> — you get only
-  <code>CityMaker.json</code> and <code>CityMaker_Import.py</code>. Open the
-  script and edit the <code>ASSET_REMAP</code> dictionary to point variant names
-  to your existing asset paths:</p>
-<pre><code><span class="comment"># CityMaker_Import.py — top of file</span>
-ASSET_REMAP = {
-    <span class="str">"BLD_001"</span>: <span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_City_01"</span>,
-    <span class="str">"BLD_002"</span>: <span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_City_02"</span>,
-}</code></pre>
+  <code>CityMaker.json</code> and <code>CityMaker_Import.py</code>. Open
+  <code>CityMaker.json</code> to see the <code>variant_name</code> values
+  CityMaker assigned. Then open <code>CityMaker_Import.py</code> and, inside
+  the placement loop, load your existing Unreal assets by path instead of
+  from the <code>imported</code> dict:</p>
+<pre><code><span class="comment"># CityMaker_Import.py — manual edit example</span>
+<span class="comment"># Replace the sm = imported.get(asset_name) line with:</span>
+sm = unreal.load_asset(<span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_City_01"</span>)
+</code></pre>
+  <div class="callout callout-info">
+    <strong>Phase 1 limitation</strong>
+    A built-in asset remapper UI is planned for the native UE5 plugin in a later
+    phase. For now, editing the import script manually is the workaround.
+  </div>
 </section>
 
 <!-- ═══════════ EXPORT — UNITY ═══════════ -->
 <section id="export-unity">
-  <h2><span class="sec-num">10</span> Export → Unity</h2>
+  <h2><span class="sec-num">10</span> Export → Unity <span class="pill pill-soon">Phase 1 — JSON only</span></h2>
+
+  <div class="callout callout-warn">
+    <strong>Phase 1 limitation</strong>
+    The Unity export writes <code>CityMaker.json</code> only — no C# importer
+    script ships in Phase 1. A native Unity C# package with a full Editor UI is
+    planned for a later phase. For now, use the JSON to drive your own placement
+    code.
+  </div>
 
   <ol class="steps">
     <li>
       <div class="step-body">
         <div class="step-title">Export from Blender</div>
-        <div class="step-desc">Set Target → Unity in the Export panel. Set the
-        Export Folder to a folder <em>outside</em> your Unity project's Assets folder.
-        Click Export. Blender writes FBX variants, <code>CityMaker.json</code>,
-        and <code>CityMakerImport.cs</code>.</div>
+        <div class="step-desc">Set Target → Unity (or CityMaker JSON) in the Export
+        panel. Set the Export Folder on disk and click <strong>Export</strong>.
+        CityMaker writes <code>CityMaker.json</code> to that folder.</div>
       </div>
     </li>
     <li>
       <div class="step-body">
-        <div class="step-title">Add FBX to Unity</div>
-        <div class="step-desc">Drag the FBX files into your Unity
-        <code>Assets/CityMaker/Meshes/</code> folder. Unity auto-imports them.
-        Set <strong>Scale Factor: 1</strong> (Blender exports in metres). Create a
-        Prefab from each mesh.</div>
+        <div class="step-title">Read the JSON in Unity</div>
+        <div class="step-desc">Parse <code>CityMaker.json</code> in your own C# Editor
+        script. Each entry in <code>placements</code> has a <code>variant_name</code>,
+        <code>position</code> (metres, Z-up), <code>rotation_z</code> (radians), and
+        <code>scale</code>. Apply a 90° X-rotation when instantiating prefabs to
+        convert Blender's right-handed Z-up to Unity's left-handed Y-up.</div>
       </div>
     </li>
     <li>
       <div class="step-body">
-        <div class="step-title">Add the import script</div>
-        <div class="step-desc">Copy <code>CityMakerImport.cs</code> to
-        <code>Assets/Editor/CityMaker/</code> in your Unity project. It must be
-        under an <code>Editor/</code> folder so it is excluded from game builds.</div>
-      </div>
-    </li>
-    <li>
-      <div class="step-body">
-        <div class="step-title">Run the importer</div>
-        <div class="step-desc">In Unity: <strong>Tools ▸ CityMaker ▸ Import City…</strong>
-        Browse to <code>CityMaker.json</code>. Set the Asset Root to where your
-        prefabs are. Click Import. Buildings appear in the scene hierarchy under
-        <code>CityMaker_Buildings</code>.</div>
+        <div class="step-title">Match variants to prefabs</div>
+        <div class="step-desc">The <code>variant_name</code> in the JSON corresponds
+        to the asset file name (without extension) used during Blender export. Map
+        these strings to your Unity prefabs in a ScriptableObject or dictionary.</div>
       </div>
     </li>
   </ol>
-
-  <div class="callout callout-tip">
-    <strong>Coordinate fix</strong>
-    Blender (right-handed) and Unity (left-handed) have different coordinate systems.
-    The import script applies a 90° X-rotation automatically. If buildings appear
-    rotated 90°, check that <code>coordinateFix = true</code> in the importer.
-  </div>
 </section>
 
 <!-- ═══════════ EXPORT — JSON ═══════════ -->
@@ -840,7 +846,7 @@ python tests/test_osm_parser.py
     <tr><td>ModuleNotFoundError: _live_common</td><td>Edit <code>LIVE_DIR</code> in <code>tests/live/_live_common.py</code> to match your repo path.</td></tr>
     <tr><td>UE: Python not found</td><td>Enable Python Editor Script Plugin in UE Plugins → restart editor.</td></tr>
     <tr><td>UE: buildings at wrong scale</td><td>The import script converts Blender metres to UE centimetres. Check Output Log for scale warnings.</td></tr>
-    <tr><td>Unity: buildings rotated 90°</td><td>Ensure <code>coordinateFix = true</code> in <code>CityMakerImport.cs</code>.</td></tr>
+    <tr><td>Unity: buildings rotated 90°</td><td>Blender is Z-up right-handed; Unity is Y-up left-handed. Apply a 90° X-rotation when instantiating prefabs in your placement script.</td></tr>
     <tr><td>Viewport is slow</td><td>Hide finished collections in the Outliner. Use batched dummy mode (Individual Objects OFF) for very large cities.</td></tr>
   </table>
 </section>
@@ -853,8 +859,9 @@ python tests/test_osm_parser.py
     <div class="card">
       <div class="card-title">Phase 1 · v0.1 <span class="pill pill-new">Current</span></div>
       <div class="card-body">28-category OSM import · Library asset placement ·
-      Ribbon roads + sidewalks · SRTM terrain · Signboards · Terrain conform ·
-      CityMaker JSON export · UE5 FBX bridge · Headless CLI · Compiled backend.</div>
+      Ribbon roads + sidewalks · SRTM terrain · Custom terrain picker ·
+      Signboards · Terrain conform · CityMaker JSON export · UE5 FBX bridge ·
+      Compiled backend.</div>
     </div>
     <div class="card">
       <div class="card-title">Phase 2 · v0.2 <span class="pill pill-soon">Next</span></div>
@@ -869,9 +876,9 @@ python tests/test_osm_parser.py
     </div>
     <div class="card">
       <div class="card-title">Phase 4 · v1.0 <span class="pill pill-soon">Planned</span></div>
-      <div class="card-body">Native UE5 C++ plugin · Native Unity C# package ·
-      Live socket bridge to running UE5 · DOTS optimisation · Headless batch
-      for 50+ km² cities.</div>
+      <div class="card-body">Native UE5 C++ plugin · Native Unity C# package with
+      Editor UI · Live socket bridge to running UE5 · DOTS optimisation ·
+      Headless CLI for batch generation of 50+ km² cities.</div>
     </div>
   </div>
 </section>
