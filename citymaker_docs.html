@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CityMaker — Documentation</title>
+<style>
+  :root {
+    --bg:          #0d0d0f;
+    --bg-card:     #131316;
+    --bg-code:     #1a1a1f;
+    --bg-panel:    #0f0f12;
+    --border:      #242430;
+    --border-hl:   #3a3a50;
+    --text:        #e0e0ec;
+    --text-dim:    #7a7a9a;
+    --text-faint:  #44445a;
+    --accent:      #6b6bff;
+    --accent-glow: rgba(107,107,255,0.15);
+    --accent2:     #ff6b6b;
+    --accent3:     #6bffb8;
+    --font-body:   'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-mono:   'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    --radius:      8px;
+    --radius-lg:   14px;
+    --max-w:       860px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,13,15,0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 60px;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; font-size: 14px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text);
+    text-decoration: none;
+  }
+  .nav-brand .dot {
+    width: 8px; height: 8px; background: var(--accent);
+    border-radius: 50%; box-shadow: 0 0 8px var(--accent);
+  }
+  .nav-links {
+    display: flex; gap: 28px; list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none; font-size: 13px;
+    letter-spacing: 0.04em; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-badge {
+    background: var(--accent); color: #fff;
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: 0.06em;
+  }
+
+  /* ── SIDEBAR + LAYOUT ── */
+  .layout {
+    display: flex; margin-top: 60px; min-height: calc(100vh - 60px);
+  }
+  aside {
+    width: 240px; flex-shrink: 0;
+    position: sticky; top: 60px; height: calc(100vh - 60px);
+    overflow-y: auto; border-right: 1px solid var(--border);
+    padding: 32px 0; background: var(--bg-panel);
+  }
+  .sidebar-section {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-faint);
+    padding: 20px 24px 8px;
+  }
+  aside a {
+    display: block; padding: 7px 24px;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 13px; border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  aside a:hover { color: var(--text); background: var(--accent-glow); }
+  aside a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-glow); }
+
+  main {
+    flex: 1; padding: 48px 60px 120px;
+    max-width: calc(var(--max-w) + 120px);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 64px; padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 48px; font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.03em; color: #fff; margin-bottom: 16px;
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero .subtitle {
+    font-size: 17px; color: var(--text-dim); max-width: 520px;
+    line-height: 1.6; margin-bottom: 32px;
+  }
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 4px 12px;
+    border-radius: 20px; letter-spacing: 0.06em;
+    border: 1px solid;
+  }
+  .badge-blue   { color: var(--accent); border-color: var(--accent); background: var(--accent-glow); }
+  .badge-green  { color: var(--accent3); border-color: var(--accent3); background: rgba(107,255,184,0.08); }
+  .badge-red    { color: var(--accent2); border-color: var(--accent2); background: rgba(255,107,107,0.08); }
+  .badge-grey   { color: var(--text-dim); border-color: var(--border-hl); background: transparent; }
+
+  /* ── SECTIONS ── */
+  section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  h2 {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+    color: #fff; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  h2 .sec-num {
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    background: var(--accent-glow); border: 1px solid var(--accent);
+    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.06em;
+  }
+  h3 {
+    font-size: 17px; font-weight: 600; color: var(--text);
+    margin: 28px 0 12px; letter-spacing: -0.01em;
+  }
+  h4 {
+    font-size: 13px; font-weight: 700; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 20px 0 8px;
+  }
+  p { margin-bottom: 14px; color: var(--text); }
+  .lead { font-size: 16px; color: var(--text-dim); margin-bottom: 28px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── CODE ── */
+  code {
+    font-family: var(--font-mono); font-size: 13px;
+    background: var(--bg-code); color: #a8b4ff;
+    padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);
+  }
+  pre {
+    background: var(--bg-code); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    overflow-x: auto; margin: 16px 0;
+  }
+  pre code {
+    background: transparent; border: none; padding: 0;
+    color: #c8d0ff; font-size: 13px; line-height: 1.7;
+  }
+  .comment { color: var(--text-faint); }
+  .str { color: var(--accent3); }
+  .kw { color: var(--accent2); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 24px 28px; margin: 16px 0;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border-hl); }
+  .card-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-body { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ── STEP LIST ── */
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    flex-shrink: 0; width: 28px; height: 28px;
+    background: var(--accent-glow); border: 1px solid var(--accent);
+    border-radius: 50%; color: var(--accent);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+  .steps li .step-body { flex: 1; }
+  .steps li .step-title { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .steps li .step-desc { font-size: 13px; color: var(--text-dim); }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    font-size: 13px;
+  }
+  th {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid var(--border-hl);
+    color: var(--text-dim); font-weight: 600;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    color: var(--text); vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--accent-glow); }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: var(--radius); padding: 16px 20px;
+    margin: 20px 0; border-left: 3px solid;
+    font-size: 13px; line-height: 1.6;
+  }
+  .callout-info   { background: rgba(107,107,255,0.07); border-color: var(--accent); color: #a8b0ff; }
+  .callout-warn   { background: rgba(255,200,50,0.07); border-color: #ffc832; color: #ffd460; }
+  .callout-tip    { background: rgba(107,255,184,0.07); border-color: var(--accent3); color: #7aefbb; }
+  .callout-danger { background: rgba(255,107,107,0.07); border-color: var(--accent2); color: #ff8888; }
+  .callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media(max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── PILL ── */
+  .pill {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em;
+    text-transform: uppercase; vertical-align: middle;
+    margin-left: 6px;
+  }
+  .pill-phase { background: rgba(107,107,255,0.2); color: var(--accent); }
+  .pill-new   { background: rgba(107,255,184,0.2); color: var(--accent3); }
+  .pill-soon  { background: rgba(100,100,120,0.3); color: var(--text-dim); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); padding: 32px 60px;
+    color: var(--text-faint); font-size: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="dot"></span>
+    CityMaker <span style="color:var(--text-dim);font-weight:400">by Speaking Pictures</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#quickstart">Quick Start</a></li>
+    <li><a href="#generate">Generate</a></li>
+    <li><a href="#export">Export</a></li>
+    <li><a href="#scripting">Scripting</a></li>
+    <li><a href="#troubleshoot">Help</a></li>
+  </ul>
+  <span class="nav-badge">v0.1 · Phase 1</span>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-section">Getting Started</div>
+  <a href="#quickstart">Quick Start</a>
+  <a href="#install">Installation</a>
+  <a href="#ui">UI Overview</a>
+
+  <div class="sidebar-section">City Source</div>
+  <a href="#osm">OSM Import</a>
+  <a href="#library">Asset Library</a>
+
+  <div class="sidebar-section">Generate</div>
+  <a href="#terrain">Terrain</a>
+  <a href="#roads">Roads</a>
+  <a href="#buildings">Buildings</a>
+  <a href="#signboards">Signboards</a>
+
+  <div class="sidebar-section">Export</div>
+  <a href="#export-ue5">Unreal Engine 5</a>
+  <a href="#export-unity">Unity</a>
+  <a href="#export-json">CityMaker JSON</a>
+
+  <div class="sidebar-section">Developer</div>
+  <a href="#scripting">Live Test Scripts</a>
+  <a href="#tests">Test Suite</a>
+
+  <div class="sidebar-section">Reference</div>
+  <a href="#troubleshoot">Troubleshooting</a>
+  <a href="#roadmap">Roadmap</a>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Speaking Pictures · CityMaker Documentation</div>
+  <h1>Build <em>cities.</em><br>Export anywhere.</h1>
+  <p class="subtitle">
+    CityMaker turns OpenStreetMap data into production-ready 3D cities inside
+    Blender 5.x — then exports to Unreal Engine 5, Unity, or any engine via a
+    JSON contract.
+  </p>
+  <div class="badge-row">
+    <span class="badge badge-blue">Blender 5.x</span>
+    <span class="badge badge-blue">Python 3.13</span>
+    <span class="badge badge-green">OSM · SRTM</span>
+    <span class="badge badge-green">UE5 · Unity</span>
+    <span class="badge badge-grey">28 Categories</span>
+    <span class="badge badge-grey">Phase 1 · v0.1</span>
+  </div>
+</div>
+
+<!-- ═══════════ QUICK START ═══════════ -->
+<section id="quickstart">
+  <h2><span class="sec-num">01</span> Quick Start</h2>
+  <p class="lead">From zero to city in under five minutes.</p>
+
+  <ol class="steps">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Install the plugin</div>
+        <div class="step-desc">Blender <strong>Preferences ▸ Add-ons ▸ Install from Disk</strong> →
+        pick <code>citymaker-0.1.0.zip</code>. Enable it. The CityMaker panel
+        appears in the <strong>N-panel</strong> (press <kbd>N</kbd> in the 3D viewport).</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Load an OSM file</div>
+        <div class="step-desc">In <strong>1 · City Source</strong>, click <strong>Load .osm File</strong>
+        and pick your downloaded OSM file, OR set your latitude/longitude and click
+        <strong>Download from Overpass</strong> for a live download. Then click
+        <strong>Import / Refresh OSM</strong>.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Connect your assets</div>
+        <div class="step-desc">In <strong>2 · Asset Library</strong>, set the source to
+        <strong>Folder</strong> and point it to a folder with building FBX/OBJ files
+        in a <code>buildings/</code> subfolder. Click <strong>Refresh Library</strong>.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Generate everything</div>
+        <div class="step-desc">In <strong>3 · Generate City</strong>, click
+        <strong>GENERATE ALL</strong>. In ~15 seconds you have terrain, roads, buildings,
+        and optional signboards placed across the full city.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Export</div>
+        <div class="step-desc">In <strong>4 · Export</strong>, choose your target engine
+        and click <strong>Export</strong>. Run the generated import script inside
+        your engine to finish.</div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="callout callout-tip">
+    <strong>Tip — No assets yet?</strong>
+    Enable <strong>Create Dummy City</strong> in Section 1. CityMaker draws
+    procedural hash-coloured geometry so you can explore the OSM layout without
+    any library.
+  </div>
+</section>
+
+<!-- ═══════════ INSTALL ═══════════ -->
+<section id="install">
+  <h2><span class="sec-num">02</span> Installation</h2>
+
+  <h3>Requirements</h3>
+  <table>
+    <tr><th>Requirement</th><th>Version</th><th>Notes</th></tr>
+    <tr><td>Blender</td><td>5.x (recommended 5.1+)</td><td>Python 3.13 runtime</td></tr>
+    <tr><td>OS</td><td>Windows 10/11, macOS 13+, Ubuntu 22+</td><td></td></tr>
+    <tr><td>Internet</td><td>Optional</td><td>Only for OSM download + SRTM elevation</td></tr>
+    <tr><td>RAM</td><td>8 GB minimum, 16 GB recommended</td><td>For cities > 3 km²</td></tr>
+  </table>
+
+  <h3>Install steps</h3>
+  <ol class="steps">
+    <li><div class="step-body"><div class="step-title">Open Preferences</div><div class="step-desc">Edit ▸ Preferences (or Ctrl+,) ▸ Add-ons tab</div></div></li>
+    <li><div class="step-body"><div class="step-title">Install from Disk</div><div class="step-desc">Click <strong>Install from Disk…</strong> button (top-right of the Add-ons panel). Navigate to and select <code>citymaker-0.1.0.zip</code>.</div></div></li>
+    <li><div class="step-body"><div class="step-title">Enable</div><div class="step-desc">Search for "CityMaker" and tick the checkbox. The plugin registers immediately — no Blender restart needed.</div></div></li>
+    <li><div class="step-body"><div class="step-title">Open the panel</div><div class="step-desc">In the 3D viewport, press <kbd>N</kbd> to open the N-panel. Click the <strong>CityMaker</strong> tab.</div></div></li>
+  </ol>
+</section>
+
+<!-- ═══════════ OSM ═══════════ -->
+<section id="osm">
+  <h2><span class="sec-num">03</span> OSM Import</h2>
+  <p class="lead">CityMaker reads OpenStreetMap data to understand what exists where.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📁 Load a local file</div>
+      <div class="card-body">Use any <code>.osm</code> file exported from
+      <a href="https://www.openstreetmap.org" style="color:var(--accent)">openstreetmap.org</a>
+      (Export → OpenStreetMap XML) or downloaded with
+      <a href="https://overpass-turbo.eu" style="color:var(--accent)">Overpass Turbo</a>.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🌐 Download live</div>
+      <div class="card-body">Enter latitude, longitude, and area size (km²), then click
+      <strong>Download from Overpass</strong>. CityMaker fetches the data directly
+      from the OSM servers. Needs internet.</div>
+    </div>
+  </div>
+
+  <h3>28-category classifier</h3>
+  <p>CityMaker classifies every OSM element into one of 28 categories and places
+  assets or geometry accordingly.</p>
+  <table>
+    <tr><th>Category group</th><th>Examples</th></tr>
+    <tr><td>Buildings</td><td>residential, commercial, industrial, historic, high_rise</td></tr>
+    <tr><td>Roads & paths</td><td>motorway, residential, footway, cycleway, steps</td></tr>
+    <tr><td>Vegetation</td><td>parks, forests, gardens, scrubland</td></tr>
+    <tr><td>Water</td><td>rivers, lakes, waterways, reservoirs</td></tr>
+    <tr><td>Public</td><td>schools, hospitals, places of worship, leisure</td></tr>
+    <tr><td>Infrastructure</td><td>railways, barriers, boundaries, parking</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Coordinate mode</strong>
+    Use <strong>Standard (fast)</strong> for cities under 50 km wide. Switch to
+    <strong>High Accuracy (Transverse Mercator)</strong> for large or high-latitude areas
+    where equirectangular projection introduces visible distortion.
+  </div>
+</section>
+
+<!-- ═══════════ LIBRARY ═══════════ -->
+<section id="library">
+  <h2><span class="sec-num">04</span> Asset Library</h2>
+
+  <table>
+    <tr><th>Source mode</th><th>When to use</th><th>Setup</th></tr>
+    <tr>
+      <td><strong>Folder</strong></td>
+      <td>FBX / GLB / OBJ / USD files on disk</td>
+      <td>One subfolder per category: <code>buildings/</code>, <code>signboards/</code>,
+      <code>street_lamps/</code>. Loose files count as buildings.</td>
+    </tr>
+    <tr>
+      <td><strong>Tagged Collections</strong></td>
+      <td>Marketplace .blend (Superhive, Fab, Synty)</td>
+      <td>Open the .blend, select objects, click <strong>Tag Selected As… → Buildings</strong>.
+      Objects move to <code>CityMaker/buildings</code> collection.</td>
+    </tr>
+    <tr>
+      <td><strong>Another .blend</strong></td>
+      <td>Assets in collections in a separate .blend</td>
+      <td>Browse to the .blend. CityMaker links collections by category subfolder name.</td>
+    </tr>
+  </table>
+
+  <h3>Normalize Asset Size</h3>
+  <p>Keep this <strong>ON</strong> (default). Marketplace and AI-generated assets come in
+  wildly different scales — a building from one pack might be 0.45 m tall while
+  another is 97 m. Normalization fits every asset to the OSM footprint without
+  distorting proportions.</p>
+
+  <div class="callout callout-warn">
+    <strong>Nothing getting placed?</strong>
+    If Normalize Asset Size is OFF and your assets span very different scales,
+    CityMaker may skip every building (nothing fits). Turn ON Normalize Asset Size.
+    The panel will warn you explicitly if placements = 0.
+  </div>
+</section>
+
+<!-- ═══════════ TERRAIN ═══════════ -->
+<section id="terrain">
+  <h2><span class="sec-num">05</span> Terrain</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🏔 Flat <span class="pill pill-phase">Default</span></div>
+      <div class="card-body">A flat ground plane sized to the OSM bounds. No internet
+      required. Right choice for stylised or game-optimised cities.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📡 Elevation (SRTM) <span class="pill pill-new">Real heights</span></div>
+      <div class="card-body">Samples real heights from OpenTopoData SRTM 30 m dataset.
+      Needs internet. Set <strong>Grid</strong> for detail (higher = more API calls).
+      Falls back to flat if the fetch fails.</div>
+    </div>
+  </div>
+
+  <h3>Conform to Terrain</h3>
+  <p>With <strong>Conform to Terrain</strong> on (default), buildings, signboards, and
+  roads are dropped onto the terrain surface. Generate terrain before buildings —
+  or use <strong>Drape on Terrain</strong> afterwards to snap everything that was
+  already placed.</p>
+
+  <div class="callout callout-tip">
+    <strong>Order doesn't matter with Drape</strong>
+    If you generated buildings first and terrain second, click
+    <strong>Drape on Terrain</strong> — it snaps everything to the current
+    terrain and rebuilds roads to follow the hills. Safe to run multiple times.
+  </div>
+</section>
+
+<!-- ═══════════ ROADS ═══════════ -->
+<section id="roads">
+  <h2><span class="sec-num">06</span> Roads</h2>
+  <p>Roads are ribbon meshes built from OSM line features at real-world widths.
+  Sidewalks are a second, slightly wider ribbon placed just below the road surface.</p>
+
+  <table>
+    <tr><th>Road type</th><th>Default width</th><th>Z rank (draw order)</th></tr>
+    <tr><td>Motorway / trunk</td><td>14 m</td><td>5</td></tr>
+    <tr><td>Primary</td><td>11 m</td><td>4</td></tr>
+    <tr><td>Secondary</td><td>8 m</td><td>3</td></tr>
+    <tr><td>Residential / unclassified</td><td>5 m</td><td>2</td></tr>
+    <tr><td>Footway / path</td><td>1.5 m</td><td>1</td></tr>
+    <tr><td>Railway</td><td>3 m</td><td>6</td></tr>
+  </table>
+
+  <p>When Conform to Terrain is on, the road centerline is densified to ~6 m
+  segments before draping so it follows hills smoothly. Roads ride ~0.12 m above
+  the ground surface to prevent z-fighting with the terrain mesh.</p>
+</section>
+
+<!-- ═══════════ BUILDINGS ═══════════ -->
+<section id="buildings">
+  <h2><span class="sec-num">07</span> Buildings</h2>
+
+  <h3>Placement algorithm</h3>
+  <p>CityMaker's placement engine (ported from ObjPlaCr) uses:</p>
+  <ul style="padding-left:20px;color:var(--text-dim);font-size:13px;line-height:2">
+    <li><strong>Weighted-random selection</strong> — assets with more variety are chosen proportionally</li>
+    <li><strong>Anti-repetition cooldown</strong> — recently-used variants are penalised</li>
+    <li><strong>Size affinity</strong> — assets closest to the plot footprint are preferred</li>
+    <li><strong>Deterministic seeding</strong> — same OSM file = same city every run (per OSM ID)</li>
+    <li><strong>Serpentine (boustrophedon) ordering</strong> — processes plots spatially so cooldown works geographically</li>
+  </ul>
+
+  <h3>Building modes</h3>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Library Assets (Phase 1)</div>
+      <div class="card-body">Place your FBX/OBJ/USD building models from the asset library, normalised to OSM footprint size.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Dummy City (Preview)</div>
+      <div class="card-body">Procedural hash-coloured extruded polygons. No assets needed. Great for checking OSM data and layout before you add a library.</div>
+    </div>
+  </div>
+
+  <h3>Individual Objects toggle</h3>
+  <p>In dummy / preview mode, turning on <strong>Individual Objects</strong> makes each
+  building, lamp, pole, and road a separate, selectable Blender object — grouped in
+  <code>CityMaker_Diagnostic/&lt;category&gt;</code> sub-collections. Turn off for
+  faster performance (one batched mesh per category).</p>
+</section>
+
+<!-- ═══════════ SIGNBOARDS ═══════════ -->
+<section id="signboards">
+  <h2><span class="sec-num">08</span> Signboards <span class="pill pill-new">New in 0.1</span></h2>
+  <p>Signs are mounted on the <strong>placed building instances</strong> — CityMaker reads the
+  real asset dimensions from the template collection so signs land exactly on the wall.</p>
+
+  <table>
+    <tr><th>Where setting</th><th>Behaviour</th></tr>
+    <tr><td>Random walls & corners</td><td>One random wall or corner per building (varied across the city)</td></tr>
+    <tr><td>Front (longest wall)</td><td>The longest facade — approximates the street-facing wall</td></tr>
+    <tr><td>Side walls</td><td>The two shorter walls only</td></tr>
+    <tr><td>Corners</td><td>At building corners with diagonal outward normals</td></tr>
+    <tr><td>All walls</td><td>Every wall above the minimum length threshold</td></tr>
+  </table>
+
+  <table>
+    <tr><th>Height setting</th><th>Behaviour</th></tr>
+    <tr><td>Random height</td><td>Varies from 15% to 85% up the building wall per sign</td></tr>
+    <tr><td>Near top</td><td>85% up — rooftop-style placement</td></tr>
+    <tr><td>Middle</td><td>50% up — mid-wall</td></tr>
+    <tr><td>Near bottom</td><td>18% up — shopfront level</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Assets needed</strong>
+    Create a <code>Signboards/</code> subfolder in your asset library folder
+    and add sign FBX/OBJ files there. Signs are normalised to ~3 m regardless
+    of building size. Run <strong>Generate Buildings</strong> before
+    <strong>Generate Signboards</strong>.
+  </div>
+</section>
+
+<!-- ═══════════ EXPORT — UE5 ═══════════ -->
+<section id="export-ue5">
+  <h2><span class="sec-num">09</span> Export → Unreal Engine 5</h2>
+
+  <div class="callout callout-warn">
+    <strong>Two different path types</strong>
+    The <strong>Export Folder</strong> is a real folder on your hard drive (has a file picker).
+    The <strong>UE Import Path</strong> is an in-engine virtual path like
+    <code>/Game/CityMaker/</code> — it is NOT a disk folder, it has no file picker.
+    FBX never goes directly into your Content folder: Unreal's import script reads the FBX
+    and creates the <code>.uasset</code> files under the Import Path.
+  </div>
+
+  <ol class="steps">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Set Export Folder (disk path)</div>
+        <div class="step-desc">Click the folder icon next to <strong>Export Folder</strong>.
+        Choose any folder outside your UE project — e.g. <code>D:\UE_Export\CityMaker\</code>.
+        CityMaker writes FBX variants, <code>CityMaker.json</code>, and
+        <code>CityMaker_Import.py</code> here.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Set UE Import Path (in-engine)</div>
+        <div class="step-desc">Type a Content Browser path like <code>/Game/CityMaker/</code>.
+        This is where Unreal will create the <code>.uasset</code> files after import.
+        No file picker — type it manually.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Click Export</div>
+        <div class="step-desc">CityMaker writes all files to the Export Folder.
+        Each unique building variant becomes one FBX (not one per instance).</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Enable Python in Unreal</div>
+        <div class="step-desc"><strong>Edit ▸ Plugins ▸</strong> search "Python" ▸
+        enable <strong>Python Editor Script Plugin</strong> → restart the editor.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Run the import script in Unreal</div>
+        <div class="step-desc"><strong>File ▸ Execute Python Script…</strong> →
+        browse to <code>CityMaker_Import.py</code> in the Export Folder → OK.
+        The script imports the FBX (creating <code>.uasset</code>), enables Nanite,
+        and places all buildings as Instanced Static Meshes from the JSON.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verify in Unreal</div>
+        <div class="step-desc">Content Browser → your Import Path → you should see
+        <code>.uasset</code> files. In the viewport and World Outliner, buildings
+        appear grouped under <code>CityMaker_Buildings</code>.</div>
+      </div>
+    </li>
+  </ol>
+
+  <h3>Using assets already in Unreal (Synty / Fab / marketplace)</h3>
+  <p>Export with <strong>Export Meshes (FBX) OFF</strong> — you get only
+  <code>CityMaker.json</code> and <code>CityMaker_Import.py</code>. Open the
+  script and edit the <code>ASSET_REMAP</code> dictionary to point variant names
+  to your existing asset paths:</p>
+<pre><code><span class="comment"># CityMaker_Import.py — top of file</span>
+ASSET_REMAP = {
+    <span class="str">"BLD_001"</span>: <span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_City_01"</span>,
+    <span class="str">"BLD_002"</span>: <span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_City_02"</span>,
+}</code></pre>
+</section>
+
+<!-- ═══════════ EXPORT — UNITY ═══════════ -->
+<section id="export-unity">
+  <h2><span class="sec-num">10</span> Export → Unity</h2>
+
+  <ol class="steps">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Export from Blender</div>
+        <div class="step-desc">Set Target → Unity in the Export panel. Set the
+        Export Folder to a folder <em>outside</em> your Unity project's Assets folder.
+        Click Export. Blender writes FBX variants, <code>CityMaker.json</code>,
+        and <code>CityMakerImport.cs</code>.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Add FBX to Unity</div>
+        <div class="step-desc">Drag the FBX files into your Unity
+        <code>Assets/CityMaker/Meshes/</code> folder. Unity auto-imports them.
+        Set <strong>Scale Factor: 1</strong> (Blender exports in metres). Create a
+        Prefab from each mesh.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Add the import script</div>
+        <div class="step-desc">Copy <code>CityMakerImport.cs</code> to
+        <code>Assets/Editor/CityMaker/</code> in your Unity project. It must be
+        under an <code>Editor/</code> folder so it is excluded from game builds.</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Run the importer</div>
+        <div class="step-desc">In Unity: <strong>Tools ▸ CityMaker ▸ Import City…</strong>
+        Browse to <code>CityMaker.json</code>. Set the Asset Root to where your
+        prefabs are. Click Import. Buildings appear in the scene hierarchy under
+        <code>CityMaker_Buildings</code>.</div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="callout callout-tip">
+    <strong>Coordinate fix</strong>
+    Blender (right-handed) and Unity (left-handed) have different coordinate systems.
+    The import script applies a 90° X-rotation automatically. If buildings appear
+    rotated 90°, check that <code>coordinateFix = true</code> in the importer.
+  </div>
+</section>
+
+<!-- ═══════════ EXPORT — JSON ═══════════ -->
+<section id="export-json">
+  <h2><span class="sec-num">11</span> CityMaker JSON</h2>
+  <p>The cross-engine contract — all placement data in one portable file.</p>
+<pre><code>{
+  <span class="str">"meta"</span>: { <span class="str">"origin_lat"</span>: 28.634, <span class="str">"origin_lon"</span>: 77.215, <span class="str">"area_km2"</span>: 5.73 },
+  <span class="str">"placements"</span>: [
+    {
+      <span class="str">"variant"</span>: <span class="str">"BLD_002"</span>,
+      <span class="str">"position"</span>: [-254.3, 178.3, -3.9],
+      <span class="str">"rotation_z"</span>: 1.84,
+      <span class="str">"scale"</span>: [1.15, 1.15, 1.15],
+      <span class="str">"category"</span>: <span class="str">"buildings"</span>,
+      <span class="str">"osm_id"</span>: <span class="str">"way/12345678"</span>
+    }
+  ],
+  <span class="str">"roads"</span>: [ ... ],
+  <span class="str">"scatter"</span>: [ ... ]
+}</code></pre>
+  <p>Use the JSON-only export when assets are already in your engine. Any engine or
+  tool that can read JSON can reconstruct the city without depending on Blender.</p>
+</section>
+
+<!-- ═══════════ SCRIPTING ═══════════ -->
+<section id="scripting">
+  <h2><span class="sec-num">12</span> Live Test Scripts (Scripting Console)</h2>
+
+  <h3>What the Blender Scripting workspace is</h3>
+  <p>Press <kbd>Scripting</kbd> tab at the top of Blender (or
+  <strong>File ▸ New ▸ Scripting</strong>). The large panel on the left is a
+  text editor where you open and run Python scripts. The 3D viewport shows
+  changes in real-time.</p>
+
+  <h3>How to run a live script</h3>
+  <ol class="steps">
+    <li><div class="step-body"><div class="step-title">Open the script</div><div class="step-desc">In the Text Editor, click <strong>Open</strong> → navigate to <code>D:\_deCode10\PluginWorks\CityMaker\tests\live\</code> → pick a script.</div></div></li>
+    <li><div class="step-body"><div class="step-title">Run it</div><div class="step-desc">Click <strong>▶ Run Script</strong> (top-right of the Text Editor) or press <kbd>Alt+P</kbd>.</div></div></li>
+    <li><div class="step-body"><div class="step-title">Watch the city build</div><div class="step-desc">Each step prints progress and redraws the viewport. Full pipeline takes 15–60 s.</div></div></li>
+  </ol>
+
+  <h3>Available scripts</h3>
+  <table>
+    <tr><th>Script</th><th>What it shows</th></tr>
+    <tr><td><code>live_1_dummy_preview.py</code></td><td>Batched dummy city — no assets, one mesh per category</td></tr>
+    <tr><td><code>live_2_dummy_separate_objects.py</code></td><td>Individual objects per feature — each selectable</td></tr>
+    <tr><td><code>live_3_buildings_folder.py</code></td><td>Real assets placed from folder library</td></tr>
+    <tr><td><code>live_4_roads.py</code></td><td>Ribbon roads + sidewalks</td></tr>
+    <tr><td><code>live_5_terrain.py</code></td><td>SRTM elevation terrain (needs internet)</td></tr>
+    <tr><td><code>live_6_signboards.py</code></td><td>Signboards on placed buildings</td></tr>
+    <tr><td><code>live_7_full_city.py</code></td><td><strong>Full pipeline</strong> — terrain → roads → buildings → signs</td></tr>
+    <tr><td><code>live_8_download_2km.py</code></td><td>Live Overpass download + dummy preview</td></tr>
+  </table>
+
+  <div class="callout callout-danger">
+    <strong>ModuleNotFoundError: No module named '_live_common'</strong>
+    Blender resolves <code>__file__</code> relative to the <em>blend file</em>, not the
+    script on disk. All live scripts now declare an absolute
+    <code>_LIVE_DIR</code> path. If you move the repo, edit <code>LIVE_DIR</code>
+    at the top of <code>tests/live/_live_common.py</code>.
+  </div>
+</section>
+
+<!-- ═══════════ TESTS ═══════════ -->
+<section id="tests">
+  <h2><span class="sec-num">13</span> Test Suite</h2>
+
+  <h3>Pure Python tests (no Blender needed)</h3>
+<pre><code><span class="comment"># Run from the repo root with any Python 3.10+</span>
+python tests/test_placement_core.py
+python tests/test_osm_categories.py
+python tests/test_projection.py
+python tests/test_osm_parser.py
+<span class="comment"># 32/32 tests pass</span></code></pre>
+
+  <h3>Integration / permutation matrix (headless Blender)</h3>
+<pre><code>blender --background --python tests/blender_integration_test.py -- \
+    --osm path/to/map.osm \
+    --assets path/to/Assets \
+    --quick
+<span class="comment"># Report → tests/_reports/integration_report.json</span></code></pre>
+
+  <h3>Terrain + signboard verification</h3>
+<pre><code>blender --background --python tests/verify_terrain_signs.py
+<span class="comment"># Report → tests/_reports/verify_terrain_signs.txt</span></code></pre>
+</section>
+
+<!-- ═══════════ TROUBLESHOOT ═══════════ -->
+<section id="troubleshoot">
+  <h2><span class="sec-num">14</span> Troubleshooting</h2>
+
+  <table>
+    <tr><th>Problem</th><th>Fix</th></tr>
+    <tr><td>Nothing gets placed / 0 buildings</td><td>Turn on <strong>Normalize Asset Size</strong>. Assets may be vastly different scales.</td></tr>
+    <tr><td>Terrain stays flat (no elevation)</td><td>Needs internet + OSM <code>&lt;bounds&gt;</code>. Switch to <strong>Flat</strong> mode for offline work.</td></tr>
+    <tr><td>Buildings float above / sink into terrain</td><td>Click <strong>Drape on Terrain</strong>. Make sure <strong>Conform to Terrain</strong> is on.</td></tr>
+    <tr><td>Roads don't follow terrain</td><td>Roads are densified before draping. Rebuild roads after terrain: click <strong>Drape on Terrain</strong> which also rebuilds roads.</td></tr>
+    <tr><td>Signboards floating off buildings</td><td>Signs read the placed asset's real dimensions from the template collection. Make sure buildings were generated with <strong>Library Assets</strong> (not Dummy) mode.</td></tr>
+    <tr><td>ModuleNotFoundError: _live_common</td><td>Edit <code>LIVE_DIR</code> in <code>tests/live/_live_common.py</code> to match your repo path.</td></tr>
+    <tr><td>UE: Python not found</td><td>Enable Python Editor Script Plugin in UE Plugins → restart editor.</td></tr>
+    <tr><td>UE: buildings at wrong scale</td><td>The import script converts Blender metres to UE centimetres. Check Output Log for scale warnings.</td></tr>
+    <tr><td>Unity: buildings rotated 90°</td><td>Ensure <code>coordinateFix = true</code> in <code>CityMakerImport.cs</code>.</td></tr>
+    <tr><td>Viewport is slow</td><td>Hide finished collections in the Outliner. Use batched dummy mode (Individual Objects OFF) for very large cities.</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════ ROADMAP ═══════════ -->
+<section id="roadmap">
+  <h2><span class="sec-num">15</span> Roadmap</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Phase 1 · v0.1 <span class="pill pill-new">Current</span></div>
+      <div class="card-body">28-category OSM import · Library asset placement ·
+      Ribbon roads + sidewalks · SRTM terrain · Signboards · Terrain conform ·
+      CityMaker JSON export · UE5 FBX bridge · Headless CLI · Compiled backend.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 2 · v0.2 <span class="pill pill-soon">Next</span></div>
+      <div class="card-body">Procedural GN buildings (8 roof types) · Proper road
+      intersections · Material themes (cyberpunk / realistic / night) · True
+      road-adjacency for signboards.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 3 · v0.3 <span class="pill pill-soon">Planned</span></div>
+      <div class="card-body">Block detection from road curves · Full scatter (lamps,
+      poles, vegetation) · Shadow / openness analysis · District streaming.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase 4 · v1.0 <span class="pill pill-soon">Planned</span></div>
+      <div class="card-body">Native UE5 C++ plugin · Native Unity C# package ·
+      Live socket bridge to running UE5 · DOTS optimisation · Headless batch
+      for 50+ km² cities.</div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <strong style="color:var(--text)">CityMaker</strong> by
+    <a href="https://speaking.pictures">Speaking Pictures Entertainment</a> ·
+    v0.1 Phase 1 · 2026
+  </div>
+  <div>
+    <a href="mailto:sydharthdhanda@gmail.com">Support</a> ·
+    <a href="https://speaking.pictures">speaking.pictures</a>
+  </div>
+</footer>
+
+<!-- Minimal highlight / active sidebar JS -->
+<script>
+  const links = document.querySelectorAll('aside a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const id = e.target.id;
+        const active = document.querySelector(`aside a[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
