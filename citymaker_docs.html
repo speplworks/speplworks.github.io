@@ -273,10 +273,10 @@
   </a>
   <ul class="nav-links">
     <li><a href="#quickstart">Quick Start</a></li>
-    <li><a href="#generate">Generate</a></li>
-    <li><a href="#export">Export</a></li>
-    <li><a href="#scripting">Scripting</a></li>
+    <li><a href="#terrain">Generate</a></li>
+    <li><a href="#export-ue5">Export</a></li>
     <li><a href="#troubleshoot">Help</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
   </ul>
   <span class="nav-badge">v0.1 · Phase 1</span>
 </nav>
@@ -304,10 +304,6 @@
   <a href="#export-ue5">Unreal Engine 5</a>
   <a href="#export-unity">Unity</a>
   <a href="#export-json">CityMaker JSON</a>
-
-  <div class="sidebar-section">Developer</div>
-  <a href="#scripting">Live Test Scripts</a>
-  <a href="#tests">Test Suite</a>
 
   <div class="sidebar-section">Reference</div>
   <a href="#troubleshoot">Troubleshooting</a>
@@ -769,72 +765,10 @@ sm = unreal.load_asset(<span class="str">"/Game/Synty/PolygonCity/Meshes/SM_Bld_
   tool that can read JSON can reconstruct the city without depending on Blender.</p>
 </section>
 
-<!-- ═══════════ SCRIPTING ═══════════ -->
-<section id="scripting">
-  <h2><span class="sec-num">12</span> Live Test Scripts (Scripting Console)</h2>
-
-  <h3>What the Blender Scripting workspace is</h3>
-  <p>Press <kbd>Scripting</kbd> tab at the top of Blender (or
-  <strong>File ▸ New ▸ Scripting</strong>). The large panel on the left is a
-  text editor where you open and run Python scripts. The 3D viewport shows
-  changes in real-time.</p>
-
-  <h3>How to run a live script</h3>
-  <ol class="steps">
-    <li><div class="step-body"><div class="step-title">Open the script</div><div class="step-desc">In the Text Editor, click <strong>Open</strong> → navigate to <code>D:\_deCode10\PluginWorks\CityMaker\tests\live\</code> → pick a script.</div></div></li>
-    <li><div class="step-body"><div class="step-title">Run it</div><div class="step-desc">Click <strong>▶ Run Script</strong> (top-right of the Text Editor) or press <kbd>Alt+P</kbd>.</div></div></li>
-    <li><div class="step-body"><div class="step-title">Watch the city build</div><div class="step-desc">Each step prints progress and redraws the viewport. Full pipeline takes 15–60 s.</div></div></li>
-  </ol>
-
-  <h3>Available scripts</h3>
-  <table>
-    <tr><th>Script</th><th>What it shows</th></tr>
-    <tr><td><code>live_1_dummy_preview.py</code></td><td>Batched dummy city — no assets, one mesh per category</td></tr>
-    <tr><td><code>live_2_dummy_separate_objects.py</code></td><td>Individual objects per feature — each selectable</td></tr>
-    <tr><td><code>live_3_buildings_folder.py</code></td><td>Real assets placed from folder library</td></tr>
-    <tr><td><code>live_4_roads.py</code></td><td>Ribbon roads + sidewalks</td></tr>
-    <tr><td><code>live_5_terrain.py</code></td><td>SRTM elevation terrain (needs internet)</td></tr>
-    <tr><td><code>live_6_signboards.py</code></td><td>Signboards on placed buildings</td></tr>
-    <tr><td><code>live_7_full_city.py</code></td><td><strong>Full pipeline</strong> — terrain → roads → buildings → signs</td></tr>
-    <tr><td><code>live_8_download_2km.py</code></td><td>Live Overpass download + dummy preview</td></tr>
-  </table>
-
-  <div class="callout callout-danger">
-    <strong>ModuleNotFoundError: No module named '_live_common'</strong>
-    Blender resolves <code>__file__</code> relative to the <em>blend file</em>, not the
-    script on disk. All live scripts now declare an absolute
-    <code>_LIVE_DIR</code> path. If you move the repo, edit <code>LIVE_DIR</code>
-    at the top of <code>tests/live/_live_common.py</code>.
-  </div>
-</section>
-
-<!-- ═══════════ TESTS ═══════════ -->
-<section id="tests">
-  <h2><span class="sec-num">13</span> Test Suite</h2>
-
-  <h3>Pure Python tests (no Blender needed)</h3>
-<pre><code><span class="comment"># Run from the repo root with any Python 3.10+</span>
-python tests/test_placement_core.py
-python tests/test_osm_categories.py
-python tests/test_projection.py
-python tests/test_osm_parser.py
-<span class="comment"># 32/32 tests pass</span></code></pre>
-
-  <h3>Integration / permutation matrix (headless Blender)</h3>
-<pre><code>blender --background --python tests/blender_integration_test.py -- \
-    --osm path/to/map.osm \
-    --assets path/to/Assets \
-    --quick
-<span class="comment"># Report → tests/_reports/integration_report.json</span></code></pre>
-
-  <h3>Terrain + signboard verification</h3>
-<pre><code>blender --background --python tests/verify_terrain_signs.py
-<span class="comment"># Report → tests/_reports/verify_terrain_signs.txt</span></code></pre>
-</section>
 
 <!-- ═══════════ TROUBLESHOOT ═══════════ -->
 <section id="troubleshoot">
-  <h2><span class="sec-num">14</span> Troubleshooting</h2>
+  <h2><span class="sec-num">12</span> Troubleshooting</h2>
 
   <table>
     <tr><th>Problem</th><th>Fix</th></tr>
@@ -843,7 +777,6 @@ python tests/test_osm_parser.py
     <tr><td>Buildings float above / sink into terrain</td><td>Click <strong>Drape on Terrain</strong>. Make sure <strong>Conform to Terrain</strong> is on.</td></tr>
     <tr><td>Roads don't follow terrain</td><td>Roads are densified before draping. Rebuild roads after terrain: click <strong>Drape on Terrain</strong> which also rebuilds roads.</td></tr>
     <tr><td>Signboards floating off buildings</td><td>Signs read the placed asset's real dimensions from the template collection. Make sure buildings were generated with <strong>Library Assets</strong> (not Dummy) mode.</td></tr>
-    <tr><td>ModuleNotFoundError: _live_common</td><td>Edit <code>LIVE_DIR</code> in <code>tests/live/_live_common.py</code> to match your repo path.</td></tr>
     <tr><td>UE: Python not found</td><td>Enable Python Editor Script Plugin in UE Plugins → restart editor.</td></tr>
     <tr><td>UE: buildings at wrong scale</td><td>The import script converts Blender metres to UE centimetres. Check Output Log for scale warnings.</td></tr>
     <tr><td>Unity: buildings rotated 90°</td><td>Blender is Z-up right-handed; Unity is Y-up left-handed. Apply a 90° X-rotation when instantiating prefabs in your placement script.</td></tr>
@@ -853,7 +786,7 @@ python tests/test_osm_parser.py
 
 <!-- ═══════════ ROADMAP ═══════════ -->
 <section id="roadmap">
-  <h2><span class="sec-num">15</span> Roadmap</h2>
+  <h2><span class="sec-num">13</span> Roadmap</h2>
 
   <div class="grid-2">
     <div class="card">
