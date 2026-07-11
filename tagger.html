@@ -144,6 +144,7 @@
     <a href="#ai"><span class="n">—</span>AI Identify</a>
     <div class="grp">Ship</div>
     <a href="#manifest"><span class="n">—</span>Manifest &amp; Thumbnails</a>
+    <a href="#export"><span class="n">05</span>Export to engine</a>
     <a href="#citymaker"><span class="n">—</span>Use in CityMaker</a>
     <div class="grp">Help</div>
     <a href="#troubleshooting"><span class="n">—</span>Troubleshooting</a>
@@ -275,19 +276,15 @@ after:   <span class="g">0.9 m</span> tall    <span class="c">(auto-corrected to
 
     <section id="ai">
       <div class="sec-n">AI IDENTIFY</div>
-      <h2>Local AI tagging <span class="pill opt">optional</span></h2>
-      <p>Tagger can look at each asset's thumbnail and identify it — <strong>entirely on your machine</strong>.
-        No cloud, no account, no ComfyUI. Two tiers, cheapest-first:</p>
-      <table>
-        <tr><th>Tier</th><th>What it does</th></tr>
-        <tr><td>CLIP (fast)</td><td>Categorises every asset in bulk — house, car, tree, prop…</td></tr>
-        <tr><td>Describe (smart)</td><td>Describes the tricky ones in words, then tags them — shop vs house, van vs truck. Runs only on what CLIP was unsure about.</td></tr>
-      </table>
-      <p>Every AI tag is a <strong>draft you confirm</strong> — nothing is applied blindly below a
-        confidence threshold. Setup is a one-time install (a couple of commands); see the bundled
-        <span class="path">_ai_setup_instructions.md</span>.</p>
-      <div class="callout"><b>Tip.</b> The AI reads thumbnails, so keep your library <em>textured</em> for the
-        sharpest results — a grey untextured model is a hard case for any vision model.</div>
+      <h2>Local AI tagging <span class="pill opt">coming in the AI update</span></h2>
+      <p>Tagger is built to identify assets by their thumbnail — <strong>entirely on your machine</strong>,
+        no cloud, no account, no ComfyUI — as a smarter layer over the geometry + folder tagging.</p>
+      <p><strong>This build tags by geometry and folder rules</strong> (works fully, no setup needed). The
+        <strong>local-AI layer</strong> — a guided one-command install plus tighter integration so AI tags
+        <em>win</em> over folder guesses — lands in the upcoming <strong>AI update</strong>. AI tags will always
+        be a <strong>draft you confirm</strong>, never applied blindly.</p>
+      <div class="callout"><b>Why it matters.</b> Folder/filename tags can mis-file (a "coaster-cap" isn't a hat);
+        the AI reads the actual shape, so it fixes exactly those cases.</div>
     </section>
 
     <section id="manifest">
@@ -304,12 +301,30 @@ after:   <span class="g">0.9 m</span> tall    <span class="c">(auto-corrected to
       <p class="muted">The manifest is a stable contract — it's exactly what downstream tools read.</p>
     </section>
 
+    <section id="export">
+      <div class="sec-n">05 · EXPORT TO ENGINE</div>
+      <h2>One click → Unreal or Unity</h2>
+      <p>Pick <strong>Unreal</strong>, <strong>Unity</strong> or <strong>Both</strong>, choose a folder, and
+        Tagger writes a manifest plus a ready-to-run importer. Your assets land in content folders
+        <strong>by category</strong>, at correct scale, with collision — no manual dragging or re-scaling.</p>
+      <table>
+        <tr><th>Engine</th><th>Run this</th></tr>
+        <tr><td>Unreal</td><td><code>UnrealEditor-Cmd "YourProject.uproject" -ExecutePythonScript="…/import_to_unreal.py"</code> (or <em>Tools ▸ Execute Python Script…</em>) → imports into <span class="path">/Game/TaggerLibrary/&lt;Category&gt;/</span></td></tr>
+        <tr><td>Unity</td><td>Drop <code>TaggerLibraryImport.cs</code> in <span class="path">Assets/Editor/</span> → <em>Tools ▸ Tagger ▸ Import Library…</em> → imports into <span class="path">Assets/TaggerLibrary/&lt;Category&gt;/</span></td></tr>
+      </table>
+      <p>Two modes: <strong>fast</strong> references your organised files in place; <strong>Bake clean FBX</strong>
+        re-exports each asset through Blender (modifiers applied, scale/orientation baked) for a fully
+        self-contained drop.</p>
+      <div class="callout"><b>Isolated &amp; safe.</b> The importers only ever write into a <span class="path">TaggerLibrary</span>
+        folder — they never touch anything else in your engine project.</div>
+    </section>
+
     <section id="citymaker">
       <div class="sec-n">WHAT COMES NEXT</div>
-      <h2>Use your library in CityMaker</h2>
+      <h2>Use your library in CityMaker <span class="pill opt">sold separately</span></h2>
       <p>Tagger is <strong>step 0</strong> of the Speaking Pictures city pipeline. Once your library has a
-        manifest, <a href="https://superhivemarket.com/products/citymaker">CityMaker</a> reads it directly and
-        furnishes a generated city from <em>your</em> assets, at correct real-world scale.</p>
+        manifest, <a href="https://superhivemarket.com/products/citymaker">CityMaker</a> <em>(sold separately)</em>
+        reads it directly and furnishes a generated city from <em>your</em> assets, at correct real-world scale.</p>
       <pre><span class="g">TAGGER</span>    scan ▸ normalise ▸ tag ▸ sort ▸ <span class="g">library_manifest.json</span>
                                           │
 <span class="w">CITYMAKER</span>  ◄─ reads it ─ generate layout ▸ <span class="w">POPULATE from your library</span> ▸ roads · rails</pre>
@@ -329,7 +344,7 @@ after:   <span class="g">0.9 m</span> tall    <span class="c">(auto-corrected to
         <tr><td>No <strong>Tagger</strong> tab</td><td>Enable the add-on in Preferences ▸ Add-ons, then press <kbd>N</kbd> in the 3D Viewport.</td></tr>
         <tr><td>“No assets found”</td><td>Point Source at a folder that actually contains FBX/OBJ/GLB/USD (or a parent of such folders).</td></tr>
         <tr><td>Assets import huge</td><td>Turn on <em>Auto-fix units</em> in step 02 — the pack was authored in centimetres.</td></tr>
-        <tr><td>AI toggle greyed out</td><td>The optional local AI isn't installed — see <span class="path">_ai_setup_instructions.md</span>. Tagger still tags by geometry without it.</td></tr>
+        <tr><td>AI toggle greyed out</td><td>The optional local AI isn't installed — it arrives (with a guided setup) in the AI update. Tagger tags by geometry + rules without it.</td></tr>
         <tr><td>Sort pulled parts</td><td>Enable <em>Skip modular parts</em> under step 03 → More.</td></tr>
       </table>
     </section>
